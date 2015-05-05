@@ -4,14 +4,15 @@
     
     <!-- your theme inherits from the material theme -->
   <style name="OsmerActivityTheme" parent="style/Theme.AppCompat.Light">
-    
+    <item name="windowActionBar">false</item> <!--  needed since rev. 22 -->
+   
+   <item name="windowNoTitle">true</item>
     <!--   your app branding color for the app bar -->
     <item name="colorPrimary">@color/primary_dark</item>
     <!--   darker variant for the status bar and contextual app bars -->
     <item name="colorPrimaryDark">@color/primary_dark</item>
     <!--   theme UI controls like checkboxes and text fields -->
     <item name="colorAccent">@color/accent</item>
-	<item name="windowActionBar">false</item>
 
   </style>
   

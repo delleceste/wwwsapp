@@ -17,6 +17,6 @@ public final class Manifest {
                           ========================================
     
          */
-        public static final String C2D_MESSAGE="it.giacomos.android.osmer.permission.C2D_MESSAGE";
+        public static final String C2D_MESSAGE="it.giacomos.android.wwwsapp.permission.C2D_MESSAGE";
     }
 }
