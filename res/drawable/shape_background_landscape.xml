@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  same as shape_background, but  for landscape -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+     <gradient android:startColor="#777777"
+     			android:centerColor="#cccccc"
+                android:endColor="#ffffff"
+                android:angle="0" />
+    <corners android:radius="0dp" />
+</shape>
