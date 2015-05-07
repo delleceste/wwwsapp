@@ -5,7 +5,14 @@ import java.util.HashMap;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.plus.model.people.Person.Image;
 
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.floatingactionbutton.FloatingActionButton;
@@ -64,7 +71,7 @@ import it.giacomos.android.wwwsapp.widgets.map.RadarOverlayUpdateListener;
 import it.giacomos.android.wwwsapp.widgets.map.ReportRequestListener;
 import it.giacomos.android.wwwsapp.widgets.map.report.ObservationDataExtractor;
 import it.giacomos.android.wwwsapp.widgets.map.report.RemovePostConfirmDialog;
-import it.giacomos.android.wwwsapp.widgets.map.report.ReportActivity;
+import it.giacomos.android.wwwsapp.widgets.map.report.PostActivity;
 import it.giacomos.android.wwwsapp.widgets.map.report.ReportRequestDialogFragment;
 import it.giacomos.android.wwwsapp.widgets.map.report.network.PostActionResultListener;
 import it.giacomos.android.wwwsapp.widgets.map.report.network.PostReport;
@@ -78,6 +85,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender.SendIntentException;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Location;
@@ -137,10 +145,23 @@ NewsUpdateListener,
 ForecastImgTouchEventListener, 
 PersonalMessageUpdateListener,
 OnPageChangeListener,
-InAppUpgradeManagerListener
+InAppUpgradeManagerListener,
+ConnectionCallbacks, 
+OnConnectionFailedListener
 {
 	private final DownloadManager m_downloadManager;
 	private final DownloadStatus mDownloadStatus;
+
+
+	/* Request code used to invoke sign in user interactions. */
+	private static final int RC_SIGN_IN = 0;
+
+	/**
+	 * True if we are in the process of resolving a ConnectionResult
+	 */
+	private boolean mIntentInProgress;
+
+	private GoogleApiClient mGoogleApiClient;
 
 	public WWWsAppActivity()
 	{
@@ -156,17 +177,32 @@ InAppUpgradeManagerListener
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-
-//		Log.e("WWWsAppActivity.onCreate", "onCreate called");
+		//		Log.e("WWWsAppActivity.onCreate", "onCreate called");
 
 		mSettings = new Settings(this);
-		
+
 		/* create the location update client and connect it to the location service */
 		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
 		if(resultCode == ConnectionResult.SUCCESS)
 		{
 			mGoogleServicesAvailable = true;
 			setContentView(R.layout.main);
+
+			if(mSettings.isFirstExecution())
+			{
+				this.mStartSignInActivity();
+			}
+			else
+			{
+				mGoogleApiClient = new GoogleApiClient.Builder(this)
+				.addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this)
+				.addApi(Plus.API)
+				.addScope(Plus.SCOPE_PLUS_PROFILE)
+				.addApi(LocationServices.API)
+				.build();
+			}
+
 			init();
 		}
 		else
@@ -174,37 +210,29 @@ InAppUpgradeManagerListener
 			mGoogleServicesAvailable = false;
 			GooglePlayServicesUtil.getErrorDialog(resultCode, this, 0).show();
 		}
-		
+
 		/* if a user has purchased the application using the inApp method, do not
 		 * show ads
 		 */
-		int inAppPurchaseStatus = mSettings.getInAppPurchaseStatus();
-		mAdsEnabled = (this.getPackageName().compareTo("it.giacomos.android.wwwsapp") == 0) && (inAppPurchaseStatus == 0)
-			&&	mSettings.timeToShowAds();
+		mAdsEnabled = false;
 		if(mAdsEnabled)
 		{
-			Log.e("WWWsAppActivity.onCreate", "inAppPurchaseStatus is 0: activating Ads");
 			Presage.getInstance().setContext(this.getBaseContext());
 			Presage.getInstance().start();
+			/* check if purchased. If purchased, inAppPurchaseStatus will be set to 1 in preferences.
+			 * If not purchased, inAppPurchaseStatus will be 0 and on the next onCreate the ad will be initialized.
+			 */
+			InAppUpgradeManager iaum = new InAppUpgradeManager();
+			iaum.addInAppUpgradeManagerListener(this);
+			iaum.checkIfPurchased(this);
 		}
-		else
-		{
-			Log.e("WWWsAppActivity.onCreate", "inAppPurchaseStatus is " + inAppPurchaseStatus + " or time to show ads " +
-					mSettings.timeToShowAds());
-		}
-		/* check if purchased. If purchased, inAppPurchaseStatus will be set to 1 in preferences.
-		 * If not purchased, inAppPurchaseStatus will be 0 and on the next onCreate the ad will be initialized.
-		 */
-		InAppUpgradeManager iaum = new InAppUpgradeManager();
-		iaum.addInAppUpgradeManagerListener(this);
-		iaum.checkIfPurchased(this);
 
 	}
 
 	public void onResume()
 	{	
 		super.onResume();
-//		Log.e("WWWsAppActivity.onResume", "onResume called");
+		//		Log.e("WWWsAppActivity.onResume", "onResume called");
 		if(!mGoogleServicesAvailable)
 			return;
 
@@ -217,7 +245,7 @@ InAppUpgradeManagerListener
 				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(ReportRequestNotification.REQUEST_NOTIFICATION_ID);
 		mNotificationManager.cancel(ReportNotification.REPORT_NOTIFICATION_ID);
-		
+
 		/*
 		 * mAdsEnabled is true if
 		 * - not purchased, not first execution of the app
@@ -229,22 +257,22 @@ InAppUpgradeManagerListener
 		{
 			Presage.getInstance().adToServe("interstitial", new IADHandler() {
 
-		    @Override
-		    public void onAdNotFound() {
-		      Log.e("PRESAGE", "ad not found");
-		    }
+				@Override
+				public void onAdNotFound() {
+					Log.e("PRESAGE", "ad not found");
+				}
 
-		    @Override
-		    public void onAdFound() {
-		      Log.e("PRESAGE", "ad found");
-		      mSettings.setAdsShownNow();
-		    }
+				@Override
+				public void onAdFound() {
+					Log.e("PRESAGE", "ad found");
+					mSettings.setAdsShownNow();
+				}
 
-		    @Override
-		    public void onAdClosed() {
-		      Log.e("PRESAGE", "ad closed");
-		    }
-		  });
+				@Override
+				public void onAdClosed() {
+					Log.e("PRESAGE", "ad closed");
+				}
+			});
 		}
 	}
 
@@ -267,7 +295,7 @@ InAppUpgradeManagerListener
 
 		if(mPersonalMessageDataFetchTask != null && mPersonalMessageDataFetchTask.getStatus() != AsyncTask.Status.FINISHED)
 			mPersonalMessageDataFetchTask.cancel(false);
-		
+
 		/* no ads when resuming after onPause */
 		mAdsEnabled = false;
 	}
@@ -279,7 +307,7 @@ InAppUpgradeManagerListener
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		Log.e("WWWsAppActivity.onPostCreate", " saved InstanceState " + savedInstanceState);
-		
+
 		super.onPostCreate(savedInstanceState);
 		if(!mGoogleServicesAvailable)
 			return;
@@ -308,12 +336,54 @@ InAppUpgradeManagerListener
 				getIntent().removeExtra("NotificationRainAlert");
 			}
 		}
-	//	Log.e("onPostCreate", "force drawer item " + forceDrawerItem);
+		//	Log.e("onPostCreate", "force drawer item " + forceDrawerItem);
 		mActionBarManager.init(savedInstanceState, forceDrawerItem);
-		
+
 		/* do not show ads when savedInstanceState is not null (e.g. after screen rotation */
 		if(savedInstanceState != null)
 			mAdsEnabled = false;
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) 
+	{
+		Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
+		if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) 
+		{
+			Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+			String personName = currentPerson.getDisplayName();
+			Image personImage = currentPerson.getImage();
+			String account = Plus.AccountApi.getAccountName(mGoogleApiClient);
+			Log.e("onConnected", "name: " + personName + " img " + personImage + " mail " + account);
+		}
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult result) 
+	{
+		if (!mIntentInProgress) 
+		{
+			if (result.hasResolution()) 
+			{
+				mIntentInProgress = true;
+				try {
+					result.startResolutionForResult(this, RC_SIGN_IN);
+					mIntentInProgress = true;
+				} 
+				catch (SendIntentException e) {
+					// The intent was canceled before it was sent.  Return to the default
+					// state and attempt to connect to get an updated ConnectionResult.
+					mIntentInProgress = false;
+					mGoogleApiClient.connect();
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onConnectionSuspended(int cause) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -341,7 +411,7 @@ InAppUpgradeManagerListener
 			}
 			//			Log.e("WWWsAppActivity.onNewIntent", "switching to item " + drawerItem);
 			mActionBarManager.drawerItemChanged(drawerItem);
-			
+
 			mAdsEnabled = false;
 		}
 	}
@@ -365,6 +435,8 @@ InAppUpgradeManagerListener
 		super.onStop();
 		if(!mGoogleServicesAvailable)
 			return;
+		if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) 
+			mGoogleApiClient.disconnect();
 	}
 
 	protected void onDestroy()
@@ -393,6 +465,8 @@ InAppUpgradeManagerListener
 		super.onStart();
 		if(!mGoogleServicesAvailable)
 			return;
+		if(mGoogleApiClient != null) /* first execution */
+			mGoogleApiClient.connect();
 	}
 
 	public void init()
@@ -416,9 +490,9 @@ InAppUpgradeManagerListener
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		this.setSupportActionBar(toolbar);
-		
+
 		mProgressBar = (ProgressBar) findViewById (R.id.mainProgressBar);
- 
+
 		mDrawerItems = getResources().getStringArray(R.array.drawer_text_items);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -426,14 +500,14 @@ InAppUpgradeManagerListener
 		ArrayList <HashMap <String, String> > alist = new ArrayList <HashMap <String, String> >();
 		for(int i = 0; i < drawerListIcons.length; i++)
 		{
-			 HashMap<String, String> hm = new HashMap<String,String>();
-			 hm.put("ITEM", mDrawerItems[i]);
-			 hm.put("ICON", Integer.toString(drawerListIcons[i]));
-			 alist.add(hm);
+			HashMap<String, String> hm = new HashMap<String,String>();
+			hm.put("ITEM", mDrawerItems[i]);
+			hm.put("ICON", Integer.toString(drawerListIcons[i]));
+			alist.add(hm);
 		}
-		 String[] from = { "ITEM", "ICON" };
-		 int[] to   = { R.id.drawerItemText, R.id.drawerItemIcon };
-		 
+		String[] from = { "ITEM", "ICON" };
+		int[] to   = { R.id.drawerItemText, R.id.drawerItemIcon };
+
 		/* Action bar stuff.  */
 		mActionBarManager = new ActionBarManager(this);
 		/* Set the adapter for the list view */
@@ -463,7 +537,7 @@ InAppUpgradeManagerListener
 		 * OMapFragment.onMapReady
 		 */
 		m_observationsCache = new ObservationsCache();
-		
+
 		OMapFragment map = getMapFragment();
 		m_observationsCache.installObservationsCacheUpdateListener(map);
 
@@ -514,11 +588,11 @@ InAppUpgradeManagerListener
 		/* hide fab if the user scrolls with his finger down, setting a minimum scroll y length */
 		final float floatingActionButtonHideYThresholdDPI = 12.0f;
 		final float density = getResources().getDisplayMetrics().density;
-		
+
 		mFloatingActionButtonHideYThreshold = density * floatingActionButtonHideYThresholdDPI;
 		SlidingTabLayout stl = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
 		stl.setOnPageChangeListener(this);
-		
+
 		getMapFragment().setRadarOverlayUpdateListener(this);
 		getMapFragment().setMapFragmentListener(this);
 	}
@@ -765,7 +839,7 @@ InAppUpgradeManagerListener
 	@Override
 	public void onStateChanged(long previousState, long state) 
 	{
-		
+
 	}
 
 	/** implemented from PostActionResultListener.
@@ -879,7 +953,7 @@ InAppUpgradeManagerListener
 
 	public void onSelectionDone(ObservationType observationType, MapMode mapMode) 
 	{
-//		Log.e("WWWsAppActivity.onSelectionDone", " type " + observationType + " mode " + mapMode);
+		//		Log.e("WWWsAppActivity.onSelectionDone", " type " + observationType + " mode " + mapMode);
 		/* switch the working mode of the map view. Already in PAGE_MAP view flipper page */
 		OMapFragment map = getMapFragment();
 		if((mapMode != MapMode.REPORT) || (mapMode == MapMode.REPORT && mReportConditionsAccepted))
@@ -893,6 +967,12 @@ InAppUpgradeManagerListener
 		if(mapMode == MapMode.DAILY_OBSERVATIONS || mapMode == MapMode.LATEST_OBSERVATIONS)
 			map.updateObservations(m_observationsCache.getObservationData(mapMode));
 
+	}
+
+	private void mStartSignInActivity()
+	{
+		Intent i = new Intent(this, SignInActivity.class);
+		this.startActivityForResult(i, SIGN_IN_ACTIVITY_FOR_RESULT_ID);
 	}
 
 	private void mStartTutorialActivity()
@@ -959,16 +1039,19 @@ InAppUpgradeManagerListener
 
 	private void mStartNotificationService(boolean startService) 
 	{
-		ServiceManager serviceManager = new ServiceManager();
-		Log.e("WWWsAppActivity.onClick", "enabling service: " + startService +
-				" was running "+ serviceManager.isServiceRunning(this));
-		boolean ret = serviceManager.setEnabled(this, startService);
-		if(ret && startService)
-			Toast.makeText(this, R.string.notificationServiceStarted, Toast.LENGTH_LONG).show();
-		else if(ret && !startService)
-			Toast.makeText(this, R.string.notificationServiceStopped, Toast.LENGTH_LONG).show();
-		else if(!ret && startService)
-			Toast.makeText(this, R.string.notificationServiceWillStartOnNetworkAvailable, Toast.LENGTH_LONG).show();
+		if(mGoogleApiClient.isConnected())
+		{
+			ServiceManager serviceManager = new ServiceManager();
+			Log.e("WWWsAppActivity.onClick", "enabling service: " + startService +
+					" was running "+ serviceManager.isServiceRunning(this));
+			boolean ret = serviceManager.setEnabled(this, startService);
+				if(ret && startService)
+					Toast.makeText(this, R.string.notificationServiceStarted, Toast.LENGTH_LONG).show();
+				else if(ret && !startService)
+					Toast.makeText(this, R.string.notificationServiceStopped, Toast.LENGTH_LONG).show();
+				else if(!ret && startService)
+					Toast.makeText(this, R.string.notificationServiceWillStartOnNetworkAvailable, Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override
@@ -1245,7 +1328,7 @@ InAppUpgradeManagerListener
 			stl.setVisibility(View.VISIBLE);
 		else
 			stl.setVisibility(View.GONE);
-		
+
 		/* hide fab if in observations, radar or webcam mode */
 		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabNewReport);
 		if( /* fab.isVisible() && */ (this.mCurrentFragmentId == 1 && id != ViewType.REPORT))
@@ -1286,7 +1369,7 @@ InAppUpgradeManagerListener
 		{
 			ObservationData obsData = new NearestObservationData().get(loc, m_observationsCache);
 			ObservationDataExtractor oex = new ObservationDataExtractor(obsData);
-			Intent i = new Intent(this, ReportActivity.class);
+			Intent i = new Intent(this, PostActivity.class);
 			i.putExtra("sky", oex.getSkyIndex());
 			i.putExtra("temp", oex.getTemperature());
 			i.putExtra("wind", oex.getWindIndex());
@@ -1306,6 +1389,31 @@ InAppUpgradeManagerListener
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) 
 	{
 		super.onActivityResult(requestCode, resultCode, data);
+
+		if(requestCode == SIGN_IN_ACTIVITY_FOR_RESULT_ID)
+		{
+			mGoogleApiClient = new GoogleApiClient.Builder(this)
+			.addConnectionCallbacks(this)
+			.addOnConnectionFailedListener(this)
+			.addApi(Plus.API)
+			.addScope(Plus.SCOPE_PLUS_PROFILE)
+			.build();
+
+			if(!mGoogleApiClient.isConnecting())
+			{
+				Log.e("onActivityResult", "not already connecting to mGoogleApiClient........");
+				mGoogleApiClient.connect();
+			}
+		}
+
+		if (requestCode == RC_SIGN_IN) 
+		{
+			mIntentInProgress = false;
+			if (!mGoogleApiClient.isConnected()) {
+				mGoogleApiClient.reconnect();
+			}
+		}
+
 		//		Log.e("onActivityResult", "result " + resultCode);
 		if(requestCode == REPORT_ACTIVITY_FOR_RESULT_ID)
 		{
@@ -1588,6 +1696,7 @@ InAppUpgradeManagerListener
 	public static final int REPORT_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 100;
 	public static final int TUTORIAL_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 101;
 	public static final int SETTINGS_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 102;
+	private static final int SIGN_IN_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 103;
 
 	private MyPendingAlertDialog mMyPendingAlertDialog;
 	private ImgTouchEventData mForecastImgTouchEventData;
@@ -1598,7 +1707,7 @@ InAppUpgradeManagerListener
 
 	private float mLastTouchedY;
 	private float mFloatingActionButtonHideYThreshold;
-	
+
 	private ProgressBar mProgressBar;
 
 	public void openMeteoFVGUrl() 
@@ -1615,7 +1724,7 @@ InAppUpgradeManagerListener
 			appUrl = new Urls().getMeteoFVGProAppStoreUrl();
 		else
 			appUrl = new Urls().getMeteoFVGAppStoreUrl();
-		
+
 		Intent sendIntent = new Intent();
 		sendIntent.setAction(Intent.ACTION_SEND);
 		sendIntent.putExtra(Intent.EXTRA_TEXT, appUrl);
@@ -1627,7 +1736,7 @@ InAppUpgradeManagerListener
 	@Override
 	public void onPurchaseComplete(boolean ok, String error, boolean b) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -1639,6 +1748,6 @@ InAppUpgradeManagerListener
 	@Override
 	public void onInAppSetupComplete(boolean success, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

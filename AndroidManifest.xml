@@ -21,23 +21,26 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" >
     </uses-permission>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    
-    
-    <!--  presage -->
-    
-		<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-		<uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS" />
-		<uses-permission android:name="com.android.browser.permission.WRITE_HISTORY_BOOKMARKS" />
-		<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
-		<uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
-	
-	<!--  end presage -->	
-		
+
+    <!-- presage -->
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS" />
+    <uses-permission android:name="com.android.browser.permission.WRITE_HISTORY_BOOKMARKS" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
+
+    <!-- end presage -->
+
+
     <!-- GET_ACCOUNTS needed on versions lower than 4.0.4. 4.0.3 and 4.0.4 is 15 -->
     <uses-permission
         android:name="android.permission.GET_ACCOUNTS"
         android:maxSdkVersion="15" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <!-- To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user -->
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <!--
           ==================================     ========================================
@@ -85,7 +88,7 @@
         android:label="@string/app_name"
         android:theme="@style/OtherActivitiesTheme" >
         <activity
-            android:name="it.giacomos.android.wwwsapp.WWWsAppActivity"
+            android:name=".WWWsAppActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/OsmerActivityTheme" >
@@ -96,10 +99,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="it.giacomos.android.wwwsapp.widgets.map.report.ReportActivityty"
+            android:name=".widgets.map.report.PostActivity"
             android:label="@string/report_activity_name"
             android:launchMode="singleTop"
-            android:parentActivityName="it.giacomos.android.wwwsapp.WWWsAppActivity"
+            android:parentActivityName=".WWWsAppActivity"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.LAUNCHER" />
@@ -130,7 +133,7 @@
         <!-- ========================================== end Meteo.FVG API KEY ============================== -->
 
         <receiver
-            android:name="it.giacomos.android.wwwsapp.service.ConnectivityChangedReceiver"
+            android:name=".service.ConnectivityChangedReceiver"
             android:enabled="true"
             android:exported="true"
             android:icon="@drawable/ic_launcher"
@@ -146,7 +149,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="it.giacomos.android.wwwsapp.service.ReportDataServicevice" >
+        <service android:name=".service.ReportDataServicevice" >
         </service>
 
         <meta-data
@@ -165,18 +168,18 @@
         -->
 
         <activity
-            android:name="it.giacomos.android.wwwsapp.widgets.map.report.tutorialActivity.TutorialPresentationActivity"
+            android:name=".widgets.map.report.tutorialActivity.TutorialPresentationActivity"
             android:label="@string/title_activity_tutorial_presentation"
-            android:parentActivityName="it.giacomos.android.wwwsapp.WWWsAppActivity"
+            android:parentActivityName=".WWWsAppActivity"
             android:theme="@style/OtherActivitiesTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.giacomos.android.wwwsapp.WWWsAppActivity" />
         </activity>
         <activity
-            android:name="it.giacomos.android.wwwsapp.preferences.SettingsActivity"
+            android:name=".preferences.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="it.giacomos.android.wwwsapp.WWWsAppActivity"
+            android:parentActivityName=".WWWsAppActivity"
             android:theme="@android:style/Theme.Holo.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -184,7 +187,7 @@
         </activity>
 
         <receiver
-            android:name="it.giacomos.android.wwwsapp.gcm.GcmBroadcastReceiverReceiver"
+            android:name=".gcm.GcmBroadcastReceiverReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -193,11 +196,11 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="it.giacomos.android.wwwsapp.GcmIntentService" />
-        <service android:name="it.giacomos.android.wwwsapp.service.RadarSyncAndRainGridDetectService" />
+        <service android:name=".GcmIntentService" />
+        <service android:name=".service.RadarSyncAndRainGridDetectService" />
 
         <activity
-            android:name="it.giacomos.android.wwwsapp.RainDetectActivity"
+            android:name=".RainDetectActivity"
             android:label="@string/title_activity_rain_detect"
             android:parentActivityName=".WWWsAppActivity" >
             <meta-data
@@ -205,15 +208,13 @@
                 android:value=".WWWsAppActivity" />
         </activity>
         <activity
-            android:name="it.giacomos.android.wwwsapp.personalMessageActivity"
+            android:name=".personalMessageActivity"
             android:label="@string/title_activity_personal_message" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".WWWsAppActivity" />
         </activity>
 
-        
-        
         <!-- PRESAGE LIBRARY -->
         <meta-data
             android:name="presage_key"
@@ -239,6 +240,15 @@
                 <action android:name="io.presage.receivers.BootReceiver.RESTART_SERVICE" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".SignInActivity"
+            android:label="@string/title_activity_sign_in"
+            android:parentActivityName=".WWWsAppActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="it.giacomos.android.wwwsapp.WWWsAppActivity" />
+        </activity>
     </application>
 
 </manifest>

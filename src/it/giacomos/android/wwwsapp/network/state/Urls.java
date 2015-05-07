@@ -8,67 +8,67 @@ public class Urls {
 	
 	public String situationUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/situazione.html";
+		return "http://www.giacomos.it/wwwsapp/data/situazione.html";
 	}
 	
 	public String todayUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/today_full.html";
+		return "http://www.giacomos.it/wwwsapp/data/today_full.html";
 	}
 
 	public String tomorrowUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/tomorrow_full.html";
+		return "http://www.giacomos.it/wwwsapp/data/tomorrow_full.html";
 	}
 
 	public String twoDaysUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/twodays_full.html";
+		return "http://www.giacomos.it/wwwsapp/data/twodays_full.html";
 	}
 
 	public String todaySymtableUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/today_symtable.txt";
+		return "http://www.giacomos.it/wwwsapp/data/today_symtable.txt";
 	}
 	
 	public String tomorrowSymtableUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/tomorrow_symtable.txt";
+		return "http://www.giacomos.it/wwwsapp/data/tomorrow_symtable.txt";
 	}
 
 	public String twoDaysSymtableUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/twodays_symtable.txt";
+		return "http://www.giacomos.it/wwwsapp/data/twodays_symtable.txt";
 	}
 	
 	public String dailyTableUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/daily_observations.txt";
+		return "http://www.giacomos.it/wwwsapp/daily_observations.txt";
 	}
 
 	public String latestTableUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/latest_observations.txt";
+		return "http://www.giacomos.it/wwwsapp/latest_observations.txt";
 	}
 
 	public String radarImageUrl() 
 	{
-		return "http://www.giacomos.it/meteo.fvg/get_last_radar_image_png.php";
+		return "http://www.giacomos.it/wwwsapp/get_last_radar_image_png.php";
 	}
 	
 	public String radarHistoricalImagesFolderUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/radar/";
+		return "http://www.giacomos.it/wwwsapp/data/radar/";
 	}
 	
 	public String radarHistoricalFileListUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/get_radar_files.php";
+		return "http://www.giacomos.it/wwwsapp/get_radar_files.php";
 	}
 	
 	public String postReportUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/publish_report.php";
+		return "http://www.giacomos.it/wwwsapp/publish_report.php";
 	}
 	
 	/**
@@ -83,22 +83,22 @@ public class Urls {
 	 */
 	public String getReportUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/get_report_2_6_3.php";
+		return "http://www.giacomos.it/wwwsapp/get_report_2_6_3.php";
 	}
 	
 	public String getPostReportRequestUrl() {
 		
-		return "http://www.giacomos.it/meteo.fvg/publish_request.php";
+		return "http://www.giacomos.it/wwwsapp/publish_request.php";
 	}
 	
 	public String getUpdateMyLocationUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/update_my_location.php";
+		return "http://www.giacomos.it/wwwsapp/update_my_location.php";
 	}
 	
 	public String getRemovePostUrl() 
 	{
-		return "http://www.giacomos.it/meteo.fvg/remove_post.php";
+		return "http://www.giacomos.it/wwwsapp/remove_post.php";
 	}
 	
 	public String webcamImagesPath()
@@ -118,37 +118,37 @@ public class Urls {
 	}
 
 	public String newsUrl() {
-		return "http://www.giacomos.it/meteo.fvg/get_news.php";
+		return "http://www.giacomos.it/wwwsapp/get_news.php";
 	}
 
 	public String meteoFvgBaseUrl()
 	{
-		return "http://www.giacomos.it/meteo.fvg/";
+		return "http://www.giacomos.it/wwwsapp/";
 	}
 
 	public String threeDaysSymtableUrl() 
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/piu_3_symtable.txt";
+		return "http://www.giacomos.it/wwwsapp/data/piu_3_symtable.txt";
 	}
 
 	public String fourDaysSymtableUrl() 
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/piu_4_symtable.txt";
+		return "http://www.giacomos.it/wwwsapp/data/piu_4_symtable.txt";
 	}
 
 	public String threeDaysUrl() 
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/piu_3.html";
+		return "http://www.giacomos.it/wwwsapp/data/piu_3.html";
 	}
 	
 	public String fourDaysUrl() 
 	{
-		return "http://www.giacomos.it/meteo.fvg/data/piu_4.html";
+		return "http://www.giacomos.it/wwwsapp/data/piu_4.html";
 	}
 
 	public String personalMessageFetchUrl() 
 	{
-		return "http://www.giacomos.it/meteo.fvg/get_configuration.php";
+		return "http://www.giacomos.it/wwwsapp/get_configuration.php";
 	}
 
 	public String getMeteoFVGUrl() {

@@ -10,10 +10,9 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 public class ServiceManager 
-{
+{	
 	public ServiceManager()
 	{
-
 	}
 
 	public boolean isServiceRunning(Context ctx)

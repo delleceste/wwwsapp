@@ -23,17 +23,19 @@ import android.util.Log;
 public class UpdateMyLocationTask extends AsyncTask<String, Integer, String> {
 
 	private String mErrorMsg;
-	private boolean mRainNotificationEnabled, mPushRainNotificationEnabled;
 	String mDeviceId, mRegistrationId;
 	private FetchRequestsTaskListener mServiceDataTaskListener;
 	double mLatitude, mLongitude;
+	GPlusUserInfo mGPlusUInfo;
 
 	private static String CLI = "afe0983der38819073rxc1900lksjd";
 
-	public UpdateMyLocationTask(FetchRequestsTaskListener sdtl, String deviceId, 
-			String registrationId, double lat, double longit, 
-			boolean rainNotificationEnabled,
-			boolean pushRainNotificationEnabled)
+	public UpdateMyLocationTask(FetchRequestsTaskListener sdtl, 
+			String deviceId, 
+			String registrationId, 
+			GPlusUserInfo gpui,
+			double lat, 
+			double longit)
 	{
 		mErrorMsg = "";
 		mServiceDataTaskListener = sdtl;
@@ -41,8 +43,7 @@ public class UpdateMyLocationTask extends AsyncTask<String, Integer, String> {
 		mRegistrationId = registrationId;
 		mLatitude = lat;
 		mLongitude = longit;
-		mRainNotificationEnabled = rainNotificationEnabled;
-		mPushRainNotificationEnabled = pushRainNotificationEnabled;
+		mGPlusUInfo = gpui;
 	}
 
 	public void removeFetchRequestTaskListener()
@@ -63,8 +64,9 @@ public class UpdateMyLocationTask extends AsyncTask<String, Integer, String> {
 		postParameters.add(new BasicNameValuePair("rid", mRegistrationId));
 		postParameters.add(new BasicNameValuePair("la", String.valueOf(mLatitude)));
 		postParameters.add(new BasicNameValuePair("lo", String.valueOf(mLongitude)));
-		postParameters.add(new BasicNameValuePair("rain_detect", String.valueOf(mRainNotificationEnabled)));
-		postParameters.add(new BasicNameValuePair("push_rain_notification", String.valueOf(mPushRainNotificationEnabled)));
+		postParameters.add(new BasicNameValuePair("account", mGPlusUInfo.account));
+		postParameters.add(new BasicNameValuePair("display_name", mGPlusUInfo.displayName));
+		postParameters.add(new BasicNameValuePair("gplus_url", mGPlusUInfo.url));
 		
 	//	Log.e("UpdateMyLocationTask", "rid " + mRegistrationId + ", d " + mDeviceId);
 		UrlEncodedFormEntity form;
@@ -81,6 +83,8 @@ public class UpdateMyLocationTask extends AsyncTask<String, Integer, String> {
 			{
 				HttpEntity entity = response.getEntity();
 				data = EntityUtils.toString(entity);
+				if(data.compareTo("0") != 0)
+					mErrorMsg = data;
 			}
 		} 
 		catch (UnsupportedEncodingException e) 

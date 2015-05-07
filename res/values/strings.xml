@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Meteo.FVG</string>
+    <string name="app_name">WWW\'s App!</string>
     <string name="app_broadcast_receiver">Meteo.FVG.BootReceiver</string>
     <string name="version">version</string>
     <string name="data_source">Data source: http://www.meteo.fvg.it</string>
@@ -49,7 +49,7 @@
     <string name="location_not_available">The current location is not available. Enable geolocalization</string>
     <string name="location_disabled">The location service is disabled. Enable it through the system settings.
         The displayed information will not be updated.</string>
-    <string name="enable_location_for_full_functionality">Enable location services for full functionality.</string>    
+    <string name="enable_location_for_full_functionality">Enable location services for full functionality.</string>
     <string name="data_missing">Data missing</string>
     <string name="min_temp">Minimum Temperature</string>
     <string name="max_temp">Maximum Temperature</string>
@@ -263,7 +263,7 @@
     <string name="cb_sky_right">Sky conditions are correct</string>
     <string name="reportSkyCorrectMustBeChecked">You must confirm that the preset sky conditions are correct!</string>
     <string name="reportSkyCorrectMustBeCheckedTitle">Confirm sky conditions</string>
-    
+
     <!-- report request -->
     <string name="reportRequestIncludeLocationName">Include location name</string>
     <string name="reportDialogRequestSendButton">Send request</string>
@@ -767,17 +767,17 @@ Please note: requests devoid of the full name and date will be ignored.\n\n</str
     <string name="personal_message_date">Date</string>
     <string name="title_activity_personal_message">Personal message</string>
     <string name="service_stopped_app_blocked">Application blocked: stopping service</string>
-    
     <string name="open_geoloc_settings">Enable</string>
     <string name="open_network_settings">Activate</string>
     <string name="wait_for_location">Wait for location</string>
-    
     <string name="send_meteofvgapp_to">Share Meteo.FVG with</string>
     <string name="send_meteofvgapp_subject">Try Meteo.FVG for Android</string>
     <string name="send_meteofvgapp_text">Download the free app Meteo.FVG for Android from the Google Play Store.\n
         If you like it, you can support the project purchasing the PRO version!\n\n
         Download free app:\nhttps://play.google.com/store/apps/details?id=it.giacomos.android.wwwsapp\n\n
-        Download Meteo.FVG pro:\nhttps://play.google.com/store/apps/details?id=it.giacomos.android.wwwsapp.pro\n\n
-        </string>
+        Download Meteo.FVG pro:\nhttps://play.google.com/store/apps/details?id=it.giacomos.android.wwwsapp.pro\n\n</string>
+    <string name="title_activity_sign_in">SignInActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="sign_in">Sign in with your Google Account</string>
 
 </resources>

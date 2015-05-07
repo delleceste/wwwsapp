@@ -25,6 +25,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.plus.model.people.Person.Image;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -48,11 +51,12 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 {
 	private Location mLocation;
 	private Handler mHandler;
-	private GoogleApiClient mLocationClient;
+	private GoogleApiClient mGApiClient;
 	private UpdateMyLocationTask mUpdateMyLocationTask;
 	private long mSleepInterval;
 	private boolean mIsStarted;
 	private Settings mSettings;
+	private GPlusUserInfo mGPlusUInfo;
 	/* timestamp updated when the AsyncTask completes, successfully or not */
 	private long mLastTaskStartedTimeMillis;
 	private long mCheckIfNeedRunIntervalMillis;
@@ -61,7 +65,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 	{
 		super();
 		mHandler = null;
-		mLocationClient = null;
+		mGApiClient = null;
 		mLocation = null;
 		mUpdateMyLocationTask = null;
 		mIsStarted = false;
@@ -94,8 +98,13 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 			mLastTaskStartedTimeMillis = mSettings.getLastReportDataServiceStartedTimeMillis();
 			mCheckIfNeedRunIntervalMillis = mSleepInterval / 6;
 
-			if(mLocationClient == null)
-				mLocationClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
+			if(mGApiClient == null)
+				mGApiClient = new GoogleApiClient.Builder(this).
+				addApi(LocationServices.API)
+				.addApi(Plus.API)
+				.addScope(Plus.SCOPE_PLUS_PROFILE)
+				.addConnectionCallbacks(this).
+				addOnConnectionFailedListener(this).build();
 
 			/* if onStartCommand is called multiple times,we must stop previously
 			 * scheduled runs.
@@ -130,7 +139,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 		{
 			/* wait for connection and then get location and update data */
 			//	log("I: run: connectin to loc cli");
-			mLocationClient.connect();
+			mGApiClient.connect();
 		}
 		else /* check in a while */
 		{
@@ -157,10 +166,14 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 	public void onConnected(Bundle arg0) 
 	{
 		// Log.e("ReportDataService.onConnected", "getting last location");
-		mLocation = LocationServices.FusedLocationApi.getLastLocation(mLocationClient);
-		mLocationClient.disconnect(); /* immediately */
-		if(mLocation != null)
+		mLocation = LocationServices.FusedLocationApi.getLastLocation(mGApiClient);
+		Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGApiClient);
+		String personName = currentPerson.getDisplayName();
+		Image personImage = currentPerson.getImage();
+		String account = Plus.AccountApi.getAccountName(mGApiClient);
+		if(mLocation != null && account != null)
 		{
+			mGPlusUInfo = new GPlusUserInfo(account, personName, personImage.getUrl());
 			startTask();
 			/* mark the last execution complete timestamp */
 			mLastTaskStartedTimeMillis = System.currentTimeMillis();
@@ -171,6 +184,8 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 		}
 		else/* wait an entire mSleepInterval before retrying */
 			mHandler.postDelayed(this, mSleepInterval);
+		
+		mGApiClient.disconnect(); /* immediately */
 	}
 
 	private void startTask()
@@ -192,14 +207,14 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 
 			if(!registrationId.isEmpty())
 			{
-				/* start the service and execute it. When the thread finishes, onServiceDataTaskComplete()
+								/* start the service and execute it. When the thread finishes, onServiceDataTaskComplete()
 				 * will schedule the next task.
 				 */
 				mUpdateMyLocationTask = new UpdateMyLocationTask(this, deviceId,
 						registrationId,
-						mLocation.getLatitude(), mLocation.getLongitude(),
-						mSettings.rainNotificationEnabled(),
-						mSettings.useInternalRainDetection());
+						mGPlusUInfo,
+						mLocation.getLatitude(), 
+						mLocation.getLongitude());
 				/* 
 				 * "http://www.giacomos.it/meteo.fvg/update_my_location.php";
 				 */
@@ -225,8 +240,8 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 		if(mHandler != null)
 			mHandler.removeCallbacks(this);
 
-		if(mLocationClient != null && mLocationClient.isConnected())
-			mLocationClient.disconnect();
+		if(mGApiClient != null && mGApiClient.isConnected())
+			mGApiClient.disconnect();
 
 		mIsStarted = false;
 
