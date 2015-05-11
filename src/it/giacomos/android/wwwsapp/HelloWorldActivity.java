@@ -28,11 +28,6 @@ import it.giacomos.android.wwwsapp.network.state.ViewType;
 import it.giacomos.android.wwwsapp.news.NewsData;
 import it.giacomos.android.wwwsapp.news.NewsFetchTask;
 import it.giacomos.android.wwwsapp.news.NewsUpdateListener;
-import it.giacomos.android.wwwsapp.observations.MapMode;
-import it.giacomos.android.wwwsapp.observations.ObservationType;
-import it.giacomos.android.wwwsapp.pager.ActionBarManager;
-import it.giacomos.android.wwwsapp.pager.DrawerItemClickListener;
-import it.giacomos.android.wwwsapp.pager.MyActionBarDrawerToggle;
 import it.giacomos.android.wwwsapp.personalMessageActivity.PersonalMessageData;
 import it.giacomos.android.wwwsapp.personalMessageActivity.PersonalMessageDataDecoder;
 import it.giacomos.android.wwwsapp.personalMessageActivity.PersonalMessageDataFetchTask;
@@ -43,6 +38,7 @@ import it.giacomos.android.wwwsapp.service.ServiceManager;
 import it.giacomos.android.wwwsapp.service.sharedData.ReportNotification;
 import it.giacomos.android.wwwsapp.service.sharedData.ReportRequestNotification;
 import it.giacomos.android.wwwsapp.widgets.AnimatedImageView;
+import it.giacomos.android.wwwsapp.widgets.map.MapMode;
 import it.giacomos.android.wwwsapp.widgets.map.MapViewMode;
 import it.giacomos.android.wwwsapp.widgets.map.OMapFragment;
 import it.giacomos.android.wwwsapp.widgets.map.ReportRequestListener;
@@ -81,6 +77,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnDismissListener;
@@ -115,7 +113,9 @@ ReportRequestListener,
 NewsUpdateListener, 
 PersonalMessageUpdateListener,
 ConnectionCallbacks, 
-OnConnectionFailedListener
+OnConnectionFailedListener,
+ListView.OnItemClickListener,
+OnItemSelectedListener /* main spinner */
 {
 	/* Request code used to invoke sign in user interactions. */
 	private static final int RC_SIGN_IN = 0;
@@ -142,6 +142,7 @@ OnConnectionFailedListener
 		//		Log.e("HelloWorldActivity.onCreate", "onCreate called");
 
 		mSettings = new Settings(this);
+		this.mDownloadStatus = DownloadStatus.Instance();
 
 		/* create the location update client and connect it to the location service */
 		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
@@ -182,7 +183,6 @@ OnConnectionFailedListener
 			Presage.getInstance().setContext(this.getBaseContext());
 			Presage.getInstance().start();
 		}
-
 	}
 
 	public void onResume()
@@ -284,8 +284,6 @@ OnConnectionFailedListener
 				getIntent().removeExtra("NotificationRainAlert");
 			}
 		}
-		//	Log.e("onPostCreate", "force drawer item " + forceDrawerItem);
-		mActionBarManager.init(savedInstanceState, forceDrawerItem);
 
 		/* do not show ads when savedInstanceState is not null (e.g. after screen rotation */
 		if(savedInstanceState != null)
@@ -357,8 +355,6 @@ OnConnectionFailedListener
 				drawerItem = 1; /* radar */
 				getIntent().removeExtra("NotificationRainAlert");
 			}
-			//			Log.e("HelloWorldActivity.onNewIntent", "switching to item " + drawerItem);
-			mActionBarManager.drawerItemChanged(drawerItem);
 
 			mAdsEnabled = false;
 		}
@@ -428,8 +424,6 @@ OnConnectionFailedListener
 		/* Set the number of pages that should be retained to either side of 
 		 * the current page in the view hierarchy in an idle state
 		 */
-
-		mTapOnMarkerHintCount = 0;
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		this.setSupportActionBar(toolbar);
 
@@ -438,7 +432,7 @@ OnConnectionFailedListener
 		mDrawerItems = getResources().getStringArray(R.array.drawer_text_items);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-		int[] drawerListIcons = new int[]{ -1, -1,  -1, -1, -1, -1, R.drawable.ic_menu_shared, R.drawable.logo_arpa };
+		int[] drawerListIcons = new int[]{ -1, -1, R.drawable.ic_menu_shared};
 		ArrayList <HashMap <String, String> > alist = new ArrayList <HashMap <String, String> >();
 		for(int i = 0; i < drawerListIcons.length; i++)
 		{
@@ -450,13 +444,11 @@ OnConnectionFailedListener
 		String[] from = { "ITEM", "ICON" };
 		int[] to   = { R.id.drawerItemText, R.id.drawerItemIcon };
 
-		/* Action bar stuff.  */
-		mActionBarManager = new ActionBarManager(this);
 		/* Set the adapter for the list view */
 		mDrawerList.setAdapter(new SimpleAdapter(this, alist, R.layout.drawer_list_item, from, to));
 
 		/* Set the list's click listener */
-		mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
+		mDrawerList.setOnItemClickListener(this);
 
 		DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -467,19 +459,8 @@ OnConnectionFailedListener
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 
-		/* don't try to remove this unless you know what ur doing. It scrambles up
-		 * the restoring of the tab selection on screen rotation.
-		 */
-		mActionBarManager.drawerItemChanged(0);
-
 		mMenuActionsManager = null;
 		mCurrentLocation = null;
-
-		/* Map has its own observations cache and registers as a listener in
-		 * OMapFragment.onMapReady
-		 */
-
-		OMapFragment map = getMapFragment();
 
 		/* to show alerts inside onPostResume, after onActivityResult */
 		mMyPendingAlertDialog = null;
@@ -566,7 +547,6 @@ OnConnectionFailedListener
 			else if(mCurrentFragmentId == 1)
 			{
 				mDrawerList.setItemChecked(0, true);
-				mActionBarManager.drawerItemChanged(0);
 			}
 			else
 				super.onBackPressed();
@@ -713,22 +693,6 @@ OnConnectionFailedListener
 	public void onMyReportRequestDialogCancelled(LatLng position) 
 	{
 		
-	}
-
-	public void onSelectionDone(ObservationType observationType, MapMode mapMode) 
-	{
-		//		Log.e("HelloWorldActivity.onSelectionDone", " type " + observationType + " mode " + mapMode);
-		/* switch the working mode of the map view. Already in PAGE_MAP view flipper page */
-		OMapFragment map = getMapFragment();
-		if((mapMode != MapMode.REPORT) || (mapMode == MapMode.REPORT && mReportConditionsAccepted))
-			map.setMode(new MapViewMode(observationType, mapMode));
-		else if(mapMode == MapMode.REPORT)
-		{
-			mDrawerList.setItemChecked(0, true);
-			mActionBarManager.drawerItemChanged(0);
-			mStartTutorialActivity();
-		}
-
 	}
 
 	private void mStartSignInActivity()
@@ -932,33 +896,12 @@ OnConnectionFailedListener
 	{
 		mCurrentViewType = id;
 		OMapFragment mapFragment = getMapFragment();
-	//	ForecastTabbedFragment ft = getForecastFragment();
-		if (id == ViewType.HOME) 
-		{
-			showFragment(0);
-		//	ft.setSelectedPage(ViewPagerPages.HOME);
-			mapFragment.setMode(new MapViewMode(ObservationType.NONE, MapMode.HIDDEN));
-		}
-		else if (id == ViewType.RADAR) 
-		{
-			showFragment(1);
-			/* remove itemized overlays (observations), if present, and restore radar view */
-			mapFragment.setMode(new MapViewMode(ObservationType.NONE, MapMode.RADAR));
-		} 
-		else if (id == ViewType.ACTION_CENTER_MAP) 
+		showFragment(1);
+		
+		if (id == ViewType.ACTION_CENTER_MAP) 
 		{
 			mapFragment.centerMap();
 		}
-		else
-		{
-			showFragment(1);
-		}
-
-		if (id == ViewType.DAILY_SKY) 
-			onSelectionDone(ObservationType.SKY, MapMode.DAILY_OBSERVATIONS);
-		else if (id == ViewType.REPORT) 
-			onSelectionDone(ObservationType.REPORT, MapMode.REPORT);
-		
 
 		TitlebarUpdater titleUpdater = new TitlebarUpdater();
 		titleUpdater.update(this);
@@ -1111,11 +1054,6 @@ OnConnectionFailedListener
 		return mDrawerList;
 	}
 
-	public ActionBarManager getActionBarManager()
-	{
-		return mActionBarManager;
-	}
-
 	public AnimatedImageView getRefreshAnimatedImageView()
 	{
 		return mRefreshAnimatedImageView;
@@ -1131,18 +1069,11 @@ OnConnectionFailedListener
 		return mLocationService;
 	}
 
-//	public ForecastTabbedFragment getForecastFragment()
-//	{
-//		return ( ForecastTabbedFragment) getSupportFragmentManager().findFragmentById(R.id.forecastTabbedFragment);
-//	}
-
 	public OMapFragment getMapFragment()
 	{
 		OMapFragment mapFrag = (OMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapview);
 		return mapFrag;
 	}
-
-	
 
 	@Override
 	public void onNewsUpdateAvailable(NewsData newsData) 
@@ -1224,49 +1155,6 @@ OnConnectionFailedListener
 			new PersonalMessageManager(this, data);
 	}
 
-
-	/* private members */
-	int mTapOnMarkerHintCount;
-	private Location mCurrentLocation;
-	private MenuActionsManager mMenuActionsManager;
-	private Settings mSettings;
-
-	private ListView mDrawerList;
-	private String[] mDrawerItems;
-	private MyActionBarDrawerToggle mDrawerToggle;
-	private ActionBarManager mActionBarManager;
-	private AnimatedImageView mRefreshAnimatedImageView;
-	private ViewType mCurrentViewType;
-	/* ActionBar menu button and menu */
-	private View mButtonsActionView;
-	private boolean mGoogleServicesAvailable;
-	Urls m_urls;
-	private LocationService mLocationService;
-	private PopupMenu mMapOptionsMenu;
-
-	private NewsFetchTask mNewsFetchTask;
-	private PersonalMessageDataFetchTask mPersonalMessageDataFetchTask;
-
-	private boolean mReportConditionsAccepted;
-	private boolean mAdsEnabled;
-
-	RelativeLayout mMainLayout;
-
-	public static final int REPORT_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 100;
-	public static final int TUTORIAL_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 101;
-	public static final int SETTINGS_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 102;
-	private static final int SIGN_IN_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 103;
-
-	private MyPendingAlertDialog mMyPendingAlertDialog;
-
-	int availCnt = 0;
-
-	int mCurrentFragmentId;
-	private float mLastTouchedY;
-	private float mFloatingActionButtonHideYThreshold;
-
-	private ProgressBar mProgressBar;
-
 	public void openMeteoFVGUrl() 
 	{
 		Intent i = new Intent(Intent.ACTION_VIEW);
@@ -1289,4 +1177,79 @@ OnConnectionFailedListener
 		sendIntent.putExtra(Intent.EXTRA_SUBJECT, this.getString(R.string.send_meteofvgapp_subject));
 		startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_meteofvgapp_to)));
 	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		ListView drawerListView = getDrawerListView();
+		String[] drawerItems = getDrawerItems();
+		
+		if(position < 1) /* map */
+		{
+			drawerListView.setItemChecked(position, true);
+			setTitle(drawerItems[position]);
+		}
+		else if(position == 1)
+		{
+			Intent i = new Intent(this, LayerListActivity.class);
+			this.startActivityForResult(i, LAYER_LIST_ACTIVITY_FOR_RESULT_ID);
+		}
+		
+		DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		drawerLayout.closeDrawer(drawerListView);		
+	}
+	
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position,
+			long id) {
+		
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* private members */
+	private Location mCurrentLocation;
+	private MenuActionsManager mMenuActionsManager;
+	private Settings mSettings;
+
+	private ListView mDrawerList;
+	private String[] mDrawerItems;
+	private MyActionBarDrawerToggle mDrawerToggle;
+	private AnimatedImageView mRefreshAnimatedImageView;
+	private ViewType mCurrentViewType;
+	/* ActionBar menu button and menu */
+	private View mButtonsActionView;
+	private boolean mGoogleServicesAvailable;
+	Urls m_urls;
+	private LocationService mLocationService;
+	private PopupMenu mMapOptionsMenu;
+
+	private NewsFetchTask mNewsFetchTask;
+	private PersonalMessageDataFetchTask mPersonalMessageDataFetchTask;
+
+	private boolean mReportConditionsAccepted;
+	private boolean mAdsEnabled;
+
+	RelativeLayout mMainLayout;
+
+	public static final int REPORT_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 100;
+	public static final int TUTORIAL_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 101;
+	public static final int SETTINGS_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 102;
+	private static final int SIGN_IN_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 103;
+	private static final int LAYER_LIST_ACTIVITY_FOR_RESULT_ID = Activity.RESULT_FIRST_USER + 104;
+
+	private MyPendingAlertDialog mMyPendingAlertDialog;
+
+	int availCnt = 0;
+
+	int mCurrentFragmentId;
+	private float mLastTouchedY;
+	private float mFloatingActionButtonHideYThreshold;
+
+	private ProgressBar mProgressBar;
 }

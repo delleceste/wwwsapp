@@ -61,26 +61,10 @@
             android:baselineAligned="false"
             android:orientation="horizontal" >
 
-   			<fragment
-	            android:id="@+id/layerListFragment"
-	            android:name="it.giacomos.android.wwwsapp.slidingtablayout.ForecastTabbedFragment"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-             />
-            
             <include layout="@layout/map_fragment" >
             </include>
 
-            <!--
-        <fragment
-            android:id="@+id/mapview"
-            android:name="it.giacomos.android.osmer.widgets.map.OMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            tools:layout="@layout/map_fragment" >
-        </fragment>
-            -->
+       
         </LinearLayout>
 
         <it.giacomos.android.wwwsapp.floatingactionbutton.FloatingActionButton

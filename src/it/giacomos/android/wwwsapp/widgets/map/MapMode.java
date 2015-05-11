@@ -1,4 +1,4 @@
-package it.giacomos.android.wwwsapp.observations;
+package it.giacomos.android.wwwsapp.widgets.map;
 
 public enum MapMode {
 	RADAR,

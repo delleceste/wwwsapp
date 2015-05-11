@@ -4,7 +4,7 @@ import java.net.URL;
 
 import it.giacomos.android.wwwsapp.network.DownloadManagerUpdateListener;
 import it.giacomos.android.wwwsapp.network.DownloadStatus;
-import it.giacomos.android.wwwsapp.observations.MapMode;
+import it.giacomos.android.wwwsapp.widgets.map.MapMode;
 
 public abstract class State
 {

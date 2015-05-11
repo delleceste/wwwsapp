@@ -4,7 +4,7 @@ import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.network.DownloadStatus;
 import it.giacomos.android.wwwsapp.network.state.ViewType;
-import it.giacomos.android.wwwsapp.observations.MapMode;
+import it.giacomos.android.wwwsapp.widgets.map.MapMode;
 import it.giacomos.android.wwwsapp.widgets.map.MapViewMode;
 import it.giacomos.android.wwwsapp.widgets.map.OMapFragment;
 

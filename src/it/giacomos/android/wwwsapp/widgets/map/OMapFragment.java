@@ -59,6 +59,7 @@ OnMapReadyCallback
 		mSavedCameraPosition = null;
 		mMapFragmentListener = null;
 		mOverlays = new ArrayList<OOverlayInterface>();
+		mMode = new MapViewMode();
 		mMode.isInit = true;
 	}
 

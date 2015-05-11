@@ -10,7 +10,7 @@ import android.util.Log;
 import it.giacomos.android.wwwsapp.network.DownloadManagerUpdateListener;
 import it.giacomos.android.wwwsapp.network.DownloadReason;
 import it.giacomos.android.wwwsapp.network.DownloadStatus;
-import it.giacomos.android.wwwsapp.observations.MapMode;
+import it.giacomos.android.wwwsapp.widgets.map.MapMode;
 
 public class Online extends State implements BitmapTaskListener, TextTaskListener {
 

@@ -5,7 +5,6 @@ import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.gcm.GcmRegistrationManager;
 import it.giacomos.android.wwwsapp.network.state.Urls;
 import it.giacomos.android.wwwsapp.preferences.Settings;
-import it.giacomos.android.wwwsapp.rainAlert.RainNotificationBuilder;
 import it.giacomos.android.wwwsapp.service.sharedData.NotificationData;
 import it.giacomos.android.wwwsapp.service.sharedData.NotificationDataFactory;
 import it.giacomos.android.wwwsapp.service.sharedData.RainNotification;
@@ -305,13 +304,13 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 						iconId = R.drawable.ic_launcher_statusbar_rain;
 						float dbZ = rainNotif.getLastDbZ();
 
-						RainNotificationBuilder rainNotifBuilder = new RainNotificationBuilder();
-						Notification notification = rainNotifBuilder.build(this,  dbZ, iconId, rainNotif.latitude, rainNotif.longitude);
-						mNotificationManager.notify(notificationData.getTag(), notificationData.getId(),  notification);
-						notified = true;
+				//		RainNotificationBuilder rainNotifBuilder = new RainNotificationBuilder();
+				//		Notification notification = rainNotifBuilder.build(this,  dbZ, iconId, rainNotif.latitude, rainNotif.longitude);
+				//		mNotificationManager.notify(notificationData.getTag(), notificationData.getId(),  notification);
+				//		notified = true;
 						/* update notification data */
-						Log.e("onServiceDataTaskComplete", "notification setting notified " + notificationData.getTag() + ", " + notified);
-						sharedData.updateCurrentRequest(notificationData, notified);
+				//		Log.e("onServiceDataTaskComplete", "notification setting notified " + notificationData.getTag() + ", " + notified);
+				//		sharedData.updateCurrentRequest(notificationData, notified);
 					}
 				}
 				else

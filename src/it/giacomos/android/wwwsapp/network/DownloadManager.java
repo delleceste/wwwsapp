@@ -8,7 +8,7 @@ import it.giacomos.android.wwwsapp.network.state.Online;
 import it.giacomos.android.wwwsapp.network.state.State;
 import it.giacomos.android.wwwsapp.network.state.StateName;
 import it.giacomos.android.wwwsapp.network.state.ViewType;
-import it.giacomos.android.wwwsapp.observations.MapMode;
+import it.giacomos.android.wwwsapp.widgets.map.MapMode;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;

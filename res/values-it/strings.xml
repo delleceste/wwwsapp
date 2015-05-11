@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">WWW\'s App!</string>
+    <string name="app_name">Hello world!</string>
     <string name="app_broadcast_receiver">Meteo.FVG.BootReceiver</string>
     <string name="version">versione</string>
     <string name="data_source">Fonte dati: http://www.meteo.fvg.it</string>
@@ -120,37 +120,12 @@
 
     <!-- Drawer -->
     <string-array name="drawer_text_items">
-        <item>Previsioni</item>
-        <item>Radar</item>
-        <item>Osservazioni giornaliere</item>
-        <item>Osservazioni ultim\'ora</item>
-        <item>Webcam</item>
-        <item>Segnalazioni</item>
+        <item>Mappa</item>
+        <item>Layers</item>
         <item>Consiglia a un amico</item>
-        <item>Sito Meteo.FVG</item>
         
     </string-array>
-    <string-array name="dailyobs_text_items">
-        <item>Cielo</item>
-        <item>Temperatura minima</item>
-        <item>Temperatura media</item>
-        <item>Temperatura massima</item>
-        <item>Umidità</item>
-        <item>Velocità media vento</item>
-        <item>Velocità massima vento</item>
-        <item>Pioggia</item>
-    </string-array>
-    <string-array name="latestobs_text_items">
-        <item>Cielo</item>
-        <item>Temperatura</item>
-        <item>Pressione</item>
-        <item>Velocità vento</item>
-        <item>Pioggia</item>
-        <item>Neve</item>
-        <item>Mare</item>
-        <item>Umidità</item>
-    </string-array>
-
+   
     <string name="drawer_open">Seleziona una vista</string>
     <string name="drawer_close">Close navigation drawer</string>
 

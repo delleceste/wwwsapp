@@ -225,10 +225,29 @@
         <activity
             android:name=".SignInActivity"
             android:label="@string/title_activity_sign_in"
-            android:parentActivityName=".HelloWorldActivity" >
+            android:parentActivityName=".HelloWorldActivity"
+            android:theme="@android:style/Theme.Holo.Light"  >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.giacomos.android.wwwsapp.HelloWorldActivity" />
+        </activity>
+        <activity
+            android:name=".LayerListActivity"
+            android:label="@string/title_layer_list"
+            android:parentActivityName=".HelloWorldActivity"
+            android:theme="@android:style/Theme.Holo.Light"  >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="it.giacomos.android.wwwsapp.HelloWorldActivity" />
+        </activity>
+        <activity
+            android:name=".LayerDetailActivity"
+            android:label="@string/title_layer_detail"
+            android:parentActivityName=".LayerListActivity" 
+            android:theme="@android:style/Theme.Holo.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="it.giacomos.android.wwwsapp.LayerListActivity" />
         </activity>
     </application>
 

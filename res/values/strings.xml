@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">WWW\'s App!</string>
+    <string name="app_name">Hello world!</string>
     <string name="app_broadcast_receiver">Meteo.FVG.BootReceiver</string>
     <string name="version">version</string>
     <string name="data_source">Data source: http://www.meteo.fvg.it</string>
@@ -119,34 +119,9 @@
 
     <!-- Drawer -->
     <string-array name="drawer_text_items">
-        <item>Forecast</item>
-        <item>Radar</item>
-        <item>Daily observations</item>
-        <item>Latest observations</item>
-        <item>Webcam</item>
-        <item>Reports</item>
-        <item>Suggest Meteo.FVG</item>
-        <item>Meteo.FVG web</item>
-    </string-array>
-    <string-array name="dailyobs_text_items">
-        <item>Sky</item>
-        <item>Minimum temperature</item>
-        <item>Average temperature</item>
-        <item>Maximum temperature</item>
-        <item>Humidity</item>
-        <item>Average wind speed</item>
-        <item>Maximum wind speed</item>
-        <item>Rain</item>
-    </string-array>
-    <string-array name="latestobs_text_items">
-        <item>Sky</item>
-        <item>Temperature</item>
-        <item>Pressure</item>
-        <item>Wind speed</item>
-        <item>Rain</item>
-        <item>Snow</item>
-        <item>Sea</item>
-        <item>Humidity</item>
+        <item>Map</item>
+        <item>Layers</item>
+        <item>Suggest Hello World!</item>
     </string-array>
 
     <string name="drawer_open">Select a view</string>
@@ -779,5 +754,7 @@ Please note: requests devoid of the full name and date will be ignored.\n\n</str
     <string name="title_activity_sign_in">SignInActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="sign_in">Sign in with your Google Account</string>
+    <string name="title_layer_list">Layers</string>
+    <string name="title_layer_detail">Layer Detail</string>
 
 </resources>

@@ -100,7 +100,7 @@ public class GcmBroadcastReceiver extends BroadcastReceiver
 						 */
 					}
 					else
-						Log.e("GcmBroadcastReceiver.onReceive", "!!! RADAR SYNC !!! data timestamp "+ timestampSeconds + " is " 
+						Log.e("GcmBroadcastReceiver.onReceive", "!!! LAYERS SYNC !!! data timestamp "+ timestampSeconds + " is " 
 								+ (currentTimestampSecs - timestampSeconds) + " seconds: TOO old");
 				}
 				else

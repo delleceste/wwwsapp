@@ -52,12 +52,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal" 
             android:baselineAligned="false">
-        
-            <it.giacomos.android.wwwsapp.slidingtablayout.SlidingTabLayout
-        android:id="@+id/sliding_tabs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-            
+       
             <Spinner
                 android:id="@+id/toolbar_spinner"
                 android:layout_width="wrap_content"
@@ -70,15 +65,7 @@
         </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
-        <fragment
-            android:id="@+id/layerListFragment"
-            android:name="it.giacomos.android.wwwsapp.slidingtablayout.ForecastTabbedFragment"
-            android:layout_width="match_parent"
-            android:layout_below="@id/toolbar"
-            android:layout_height="wrap_content"
-             />
-
-         
+    
         
         <include layout="@layout/map_fragment" >
         </include>
