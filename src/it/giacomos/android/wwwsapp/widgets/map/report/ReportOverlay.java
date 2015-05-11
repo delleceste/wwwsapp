@@ -336,12 +336,6 @@ OnClickListener
 		return false;
 	}
 
-	public void update(Context ctx, boolean force) 
-	{
-		mMapFrag.getActivity().findViewById(R.id.mapProgressBar).setVisibility(View.VISIBLE);
-		mReportUpdater.update(force);
-	}
-
 	@Override
 	public void onReportUpdateMessage(String message)
 	{

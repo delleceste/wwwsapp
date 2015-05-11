@@ -16,10 +16,10 @@ import com.google.android.gms.plus.model.people.Person.Image;
 
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.floatingactionbutton.FloatingActionButton;
-import it.giacomos.android.wwwsapp.fragments.MapFragmentListener;
 import it.giacomos.android.wwwsapp.gcm.GcmRegistrationManager;
 import it.giacomos.android.wwwsapp.interfaceHelpers.MenuActionsManager;
 import it.giacomos.android.wwwsapp.interfaceHelpers.TitlebarUpdater;
+import it.giacomos.android.wwwsapp.layers.LayerListActivity;
 import it.giacomos.android.wwwsapp.locationUtils.LocationInfo;
 import it.giacomos.android.wwwsapp.locationUtils.LocationService;
 import it.giacomos.android.wwwsapp.network.DownloadStatus;
@@ -38,6 +38,7 @@ import it.giacomos.android.wwwsapp.service.ServiceManager;
 import it.giacomos.android.wwwsapp.service.sharedData.ReportNotification;
 import it.giacomos.android.wwwsapp.service.sharedData.ReportRequestNotification;
 import it.giacomos.android.wwwsapp.widgets.AnimatedImageView;
+import it.giacomos.android.wwwsapp.widgets.map.MapFragmentListener;
 import it.giacomos.android.wwwsapp.widgets.map.MapMode;
 import it.giacomos.android.wwwsapp.widgets.map.MapViewMode;
 import it.giacomos.android.wwwsapp.widgets.map.OMapFragment;
@@ -774,14 +775,8 @@ OnItemSelectedListener /* main spinner */
 		{
 			mCreateMapOptionsPopupMenu(true);
 		} 
-		else if(v.getId() == R.id.actionNewReport || v.getId() == R.id.fabNewReport)
+		else if(v.getId() == R.id.fabNewReport)
 		{
-			if(mCurrentViewType != ViewType.REPORT)
-			{
-				//mDrawerList.setItemChecked(5, true);
-				//this.mActionBarManager.drawerItemChanged(5);
-				mDrawerList.performItemClick(mDrawerList, 5, -1); /* seems to be enough */
-			}
 			mReportConditionsAccepted = mSettings.reportConditionsAccepted();
 			if(mReportConditionsAccepted)
 				startReportActivity();	
@@ -1010,18 +1005,12 @@ OnItemSelectedListener /* main spinner */
 				mStartNotificationService(conditionsAccepted && mSettings.notificationServiceEnabled());
 			}
 
-			//			Log.e("HelloWorldActivity.onActivityResult", "conditionsAccepted " + conditionsAccepted);
 			if(conditionsAccepted)
 			{
-				mDrawerList.performItemClick(mDrawerList, 5, mDrawerList.getItemIdAtPosition(5));
-				//				mDrawerList.setItemChecked(5, true);
-				//				mActionBarManager.drawerItemChanged(5);
 			}
 			else
 			{
-				mDrawerList.performItemClick(mDrawerList, 0, mDrawerList.getItemIdAtPosition(0));
-				//mDrawerList.setItemChecked(5, true);
-				//mActionBarManager.drawerItemChanged(5);
+				
 			}
 		}
 	}
@@ -1047,11 +1036,6 @@ OnItemSelectedListener /* main spinner */
 	public  String[] getDrawerItems()
 	{
 		return mDrawerItems;
-	}
-
-	public ListView getDrawerListView()
-	{
-		return mDrawerList;
 	}
 
 	public AnimatedImageView getRefreshAnimatedImageView()
@@ -1181,12 +1165,11 @@ OnItemSelectedListener /* main spinner */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		ListView drawerListView = getDrawerListView();
 		String[] drawerItems = getDrawerItems();
 		
 		if(position < 1) /* map */
 		{
-			drawerListView.setItemChecked(position, true);
+			mDrawerList.setItemChecked(position, true);
 			setTitle(drawerItems[position]);
 		}
 		else if(position == 1)
@@ -1196,7 +1179,7 @@ OnItemSelectedListener /* main spinner */
 		}
 		
 		DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		drawerLayout.closeDrawer(drawerListView);		
+		drawerLayout.closeDrawer(mDrawerList);		
 	}
 	
 

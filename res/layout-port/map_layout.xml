@@ -33,18 +33,6 @@
             android:textSize="12sp"
             android:visibility="visible" />
 
-        <!--  LinearLayout
-            android:id="@+id/animationTimestampLinearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginTop="12dp"
-            android:gravity="center_horizontal"
-            android:orientation="vertical" -->
-
             <TextView
                 android:id="@+id/radarAnimTime"
                 android:layout_width="wrap_content"
@@ -84,7 +72,8 @@
               android:layout_centerHorizontal="true"
               android:layout_centerInParent="false"
               android:layout_centerVertical="true"
-              android:layout_marginBottom="43dp" />
+              android:layout_marginBottom="43dp"
+              android:visibility="gone" />
         
     </RelativeLayout>
     

@@ -14,7 +14,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
-import it.giacomos.android.wwwsapp.fragments.MapFragmentListener;
 import it.giacomos.android.wwwsapp.locationUtils.GeoCoordinates;
 import it.giacomos.android.wwwsapp.preferences.Settings;
 import it.giacomos.android.wwwsapp.widgets.OAnimatedTextView;
