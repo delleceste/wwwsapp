@@ -1,7 +1,7 @@
 package it.giacomos.android.wwwsapp.pager;
 
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.observations.MapMode;
 import android.support.v4.widget.DrawerLayout;
@@ -12,7 +12,7 @@ import android.widget.ListView;
 
 public class DrawerItemClickListener implements ListView.OnItemClickListener 
 {
-	public DrawerItemClickListener(WWWsAppActivity a)
+	public DrawerItemClickListener(HelloWorldActivity a)
 	{
 		super();
 		mOsmerActivity = a;
@@ -54,9 +54,9 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener
 
 		DrawerLayout drawerLayout = (DrawerLayout) mOsmerActivity.findViewById(R.id.drawer_layout);
 		drawerLayout.closeDrawer(drawerListView);
-		/* calls switchView on WWWsAppActivity with the position passed */
+		/* calls switchView on HelloWorldActivity with the position passed */
 		mOsmerActivity.getActionBarManager().drawerItemChanged(position);
 	}
 
-	private WWWsAppActivity mOsmerActivity;
+	private HelloWorldActivity mOsmerActivity;
 }

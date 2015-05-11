@@ -1,6 +1,6 @@
 package it.giacomos.android.wwwsapp.interfaceHelpers;
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.widgets.AnimatedImageView;
 
@@ -13,7 +13,7 @@ public class ToastMessageManager
 {
 	public static Toast mToast;
 	
-	public void onError(WWWsAppActivity a, String message)
+	public void onError(HelloWorldActivity a, String message)
 	{
 		if(mToast == null)
 			mToast  = Toast.makeText(a.getApplicationContext(), a.getResources().getString(R.string.netErrorToast) + "\n", Toast.LENGTH_LONG);

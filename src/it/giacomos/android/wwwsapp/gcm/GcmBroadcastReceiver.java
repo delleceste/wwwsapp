@@ -1,12 +1,9 @@
 package it.giacomos.android.wwwsapp.gcm;
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.network.state.Urls;
 import it.giacomos.android.wwwsapp.preferences.Settings;
-import it.giacomos.android.wwwsapp.rainAlert.SyncImages;
-import it.giacomos.android.wwwsapp.rainAlert.SyncImagesListener;
-import it.giacomos.android.wwwsapp.service.RadarSyncAndRainGridDetectService;
 import it.giacomos.android.wwwsapp.service.sharedData.NotificationData;
 import it.giacomos.android.wwwsapp.service.sharedData.NotificationDataFactory;
 import it.giacomos.android.wwwsapp.service.sharedData.RainNotification;
@@ -31,7 +28,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.Toast;
 
-public class GcmBroadcastReceiver extends BroadcastReceiver implements SyncImagesListener
+public class GcmBroadcastReceiver extends BroadcastReceiver
 {
 	@Override
 	public void onReceive(Context ctx, Intent intent) 
@@ -93,7 +90,7 @@ public class GcmBroadcastReceiver extends BroadcastReceiver implements SyncImage
 				{
 					if(currentTimestampSecs - timestampSeconds < 1 * 60) /* the notification has been recently sent */
 					{
-						Log.e("GcmBroadcastReceiver.onReceive", "****** RADAR SYNC ******* data timestamp "
+						Log.e("GcmBroadcastReceiver.onReceive", "****** TO IMPLEMENT ******* data timestamp "
 								+ timestampSeconds + " is " + (currentTimestampSecs - timestampSeconds) + " seconds old " + 
 								" current ts is " + currentTimestampSecs);
 
@@ -101,9 +98,6 @@ public class GcmBroadcastReceiver extends BroadcastReceiver implements SyncImage
 						 * and try to guess if it is going to rain in the next future. The service takes care of
 						 * notifications when calculations are completed.
 						 */
-						Intent radarSyncRainDetectService = new Intent(ctx, RadarSyncAndRainGridDetectService.class);
-						radarSyncRainDetectService.putExtra("timestamp", timestampSeconds);
-						ctx.startService(radarSyncRainDetectService);
 					}
 					else
 						Log.e("GcmBroadcastReceiver.onReceive", "!!! RADAR SYNC !!! data timestamp "+ timestampSeconds + " is " 
@@ -141,7 +135,7 @@ public class GcmBroadcastReceiver extends BroadcastReceiver implements SyncImage
 									ledColor = Color.RED; /* red notification */
 									float dbZ = rainNotif.getLastDbZ();
 									/* allocate a result intent */
-									resultIntent = new Intent(ctx, WWWsAppActivity.class);
+									resultIntent = new Intent(ctx, HelloWorldActivity.class);
 									resultIntent.putExtra("NotificationRainAlert", true);
 
 									if(dbZ < 27)
@@ -168,7 +162,7 @@ public class GcmBroadcastReceiver extends BroadcastReceiver implements SyncImage
 							{
 								Log.e("GcmBroadcastReceiver.onReceive", "notification can be considereth new " + notificationData.username);
 								/* allocate a result intent */
-								resultIntent = new Intent(ctx, WWWsAppActivity.class);
+								resultIntent = new Intent(ctx, HelloWorldActivity.class);
 								/* request or report */
 								if(notificationData.isRequest())
 								{
@@ -224,7 +218,7 @@ public class GcmBroadcastReceiver extends BroadcastReceiver implements SyncImage
 							// your application to the Home screen.
 							TaskStackBuilder stackBuilder = TaskStackBuilder.create(ctx);
 							// Adds the back stack for the Intent (but not the Intent itself)
-							stackBuilder.addParentStack(WWWsAppActivity.class);
+							stackBuilder.addParentStack(HelloWorldActivity.class);
 							// Adds the Intent that starts the Activity to the top of the stack
 							stackBuilder.addNextIntent(resultIntent);
 
@@ -251,18 +245,16 @@ public class GcmBroadcastReceiver extends BroadcastReceiver implements SyncImage
 		}  /* !extras.isEmpty */
 	} 
 
-
-
-	@Override
-	public void onImagesSynced(String[] filepaths) 
-	{
-		if(filepaths != null)
-		{
-			Log.e("GcmBroadcastReceiver.onImagesSynced", " saved images " + filepaths[0] + " and " + filepaths[1]);
-		}
-		else
-			Log.e("GcmBroadcastReceiver.onImagesSynced", " failed to saved images!");
-
-	}
+//	@Override
+//	public void onImagesSynced(String[] filepaths) 
+//	{
+//		if(filepaths != null)
+//		{
+//			Log.e("GcmBroadcastReceiver.onImagesSynced", " saved images " + filepaths[0] + " and " + filepaths[1]);
+//		}
+//		else
+//			Log.e("GcmBroadcastReceiver.onImagesSynced", " failed to saved images!");
+//
+//	}
 
 }

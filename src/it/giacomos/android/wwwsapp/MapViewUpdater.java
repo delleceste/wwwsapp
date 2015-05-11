@@ -13,7 +13,7 @@ import it.giacomos.android.wwwsapp.widgets.map.OMapFragment;
  */
 public class MapViewUpdater 
 {
-	public void update(WWWsAppActivity a)
+	public void update(HelloWorldActivity a)
 	{
 		int displayedChild = a.getDisplayedFragment();
 		if(displayedChild == FragmentType.MAP)
@@ -27,7 +27,7 @@ public class MapViewUpdater
 			}
 			else if(mapMode.currentMode == MapMode.REPORT)
 			{
-				a.updateReport(true);
+				
 			}
 
 		}

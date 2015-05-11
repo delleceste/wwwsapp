@@ -47,7 +47,6 @@
                 android:background="@drawable/tutorial_textview_background_black_grad"
                 android:drawableLeft="@drawable/ic_launcher_statusbar_report"
                 android:drawablePadding="5dp"
-                android:drawableRight="@drawable/weather_clouds"
                 android:padding="8dp"
                 android:text="@string/tutorial_report_notification" />
 

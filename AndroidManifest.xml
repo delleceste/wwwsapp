@@ -88,7 +88,7 @@
         android:label="@string/app_name"
         android:theme="@style/OtherActivitiesTheme" >
         <activity
-            android:name=".WWWsAppActivity"
+            android:name=".HelloWorldActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/OsmerActivityTheme" >
@@ -102,7 +102,7 @@
             android:name=".widgets.map.report.PostActivity"
             android:label="@string/report_activity_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".WWWsAppActivity"
+            android:parentActivityName=".HelloWorldActivity"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.LAUNCHER" />
@@ -160,34 +160,34 @@
         activity
             android:name="it.giacomos.android.wwwsapp.trial.BuyProActivity"
             android:label="@string/title_activity_buy_pro"
-            android:parentActivityName="it.giacomos.android.wwwsapp.WWWsAppActivity" >
+            android:parentActivityName="it.giacomos.android.wwwsapp.HelloWorldActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.giacomos.android.wwwsapp.WWWsAppActivity" />
+                android:value="it.giacomos.android.wwwsapp.HelloWorldActivity" />
         </activity
         -->
 
         <activity
             android:name=".widgets.map.report.tutorialActivity.TutorialPresentationActivity"
             android:label="@string/title_activity_tutorial_presentation"
-            android:parentActivityName=".WWWsAppActivity"
+            android:parentActivityName=".HelloWorldActivity"
             android:theme="@style/OtherActivitiesTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.giacomos.android.wwwsapp.WWWsAppActivity" />
+                android:value="it.giacomos.android.wwwsapp.HelloWorldActivity" />
         </activity>
         <activity
             android:name=".preferences.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".WWWsAppActivity"
+            android:parentActivityName=".HelloWorldActivity"
             android:theme="@android:style/Theme.Holo.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.giacomos.android.wwwsapp.WWWsAppActivity" />
+                android:value="it.giacomos.android.wwwsapp.HelloWorldActivity" />
         </activity>
 
         <receiver
-            android:name=".gcm.GcmBroadcastReceiverReceiver"
+            android:name=".gcm.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -195,25 +195,6 @@
                 <category android:name="it.giacomos.android.wwwsapp" />
             </intent-filter>
         </receiver>
-
-        <service android:name=".GcmIntentService" />
-        <service android:name=".service.RadarSyncAndRainGridDetectService" />
-
-        <activity
-            android:name=".RainDetectActivity"
-            android:label="@string/title_activity_rain_detect"
-            android:parentActivityName=".WWWsAppActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".WWWsAppActivity" />
-        </activity>
-        <activity
-            android:name=".personalMessageActivity"
-            android:label="@string/title_activity_personal_message" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".WWWsAppActivity" />
-        </activity>
 
         <!-- PRESAGE LIBRARY -->
         <meta-data
@@ -244,10 +225,10 @@
         <activity
             android:name=".SignInActivity"
             android:label="@string/title_activity_sign_in"
-            android:parentActivityName=".WWWsAppActivity" >
+            android:parentActivityName=".HelloWorldActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.giacomos.android.wwwsapp.WWWsAppActivity" />
+                android:value="it.giacomos.android.wwwsapp.HelloWorldActivity" />
         </activity>
     </application>
 

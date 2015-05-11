@@ -94,7 +94,7 @@ public class GcmRegistrationManager
 	                // Require the user to click a button again, or perform
 	                // exponential back-off.
 	                /* NOTE the registration is attempted inside init(), called upon onCreate in
-	                 * WWWsAppActivity.
+	                 * HelloWorldActivity.
 	                 */
 	            }
 	            return regId;

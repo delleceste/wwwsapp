@@ -84,63 +84,6 @@
         
         <!-- /LinearLayout-->
     
-         <LinearLayout
-        android:id="@+id/animationButtonsLinearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-	    android:layout_alignParentBottom="true"
-	    android:layout_alignParentRight="true"
-	    android:layout_marginBottom="10dp"
-	    android:layout_marginRight="20dp"
-	    android:background="@drawable/rounded_box_dark"
-        android:orientation="horizontal" >
-        
-          <Button
-            android:id="@+id/previousButton"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:background="@drawable/ic_media_previous"
-            android:textOff=""
-            android:textOn=""
-            android:visibility="gone" />    
-             
-        <ToggleButton
-            android:id="@+id/stopButton"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:background="@drawable/ic_menu_close_clear_cancel"
-            android:textOff=""
-            android:textOn=""
-            android:visibility="gone" />
-             
-        <ToggleButton
-            android:id="@+id/playPauseButton"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:background="@drawable/ic_play_pause_button"
-            android:textOff=""
-            android:textOn=""
-            android:visibility="gone" />
-        
-        <Button
-            android:id="@+id/nextButton"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:background="@drawable/ic_media_next"
-            android:textOff=""
-            android:textOn=""
-            android:visibility="gone" />    
-             
-        
-        </LinearLayout>
          
           <ProgressBar
               android:id="@+id/mapProgressBar"
@@ -164,6 +107,7 @@
               android:layout_alignParentEnd="false"
               android:layout_alignParentRight="true"
               android:layout_alignParentStart="false"
+              android:layout_alignParentLeft="false"
               android:layout_margin="16dp"
               android:drawable="@drawable/ic_menu_edit"
               android:color="#e0e0e0" />

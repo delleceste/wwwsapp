@@ -1,6 +1,6 @@
 package it.giacomos.android.wwwsapp.service;
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.gcm.GcmRegistrationManager;
 import it.giacomos.android.wwwsapp.network.state.Urls;
@@ -290,7 +290,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 					/* and notify */
 					int iconId;
 					// Creates an explicit intent for an Activity in your app
-					Intent resultIntent = new Intent(this, WWWsAppActivity.class);
+					Intent resultIntent = new Intent(this, HelloWorldActivity.class);
 					resultIntent.putExtra("ptLatitude", notificationData.latitude);
 					resultIntent.putExtra("ptLongitude", notificationData.longitude);
 

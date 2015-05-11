@@ -1,12 +1,12 @@
 package it.giacomos.android.wwwsapp.interfaceHelpers;
 
 import android.support.v7.widget.Toolbar;
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.network.DownloadStatus;
 
 public class TitlebarUpdater {
-	public void update(WWWsAppActivity a)
+	public void update(HelloWorldActivity a)
 	{
 		TitleBuilder titleBuilder = new TitleBuilder();
 		a.setTitle(titleBuilder.makeTitle(a));

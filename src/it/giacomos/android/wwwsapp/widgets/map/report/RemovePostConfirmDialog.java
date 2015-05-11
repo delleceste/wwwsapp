@@ -24,7 +24,7 @@ DialogInterface.OnClickListener
 	private PostType mType;
 	private String mDeviceId;
 	
-	/* WWWsAppActivity wants to be notified whether the task is completed (successfully or not)
+	/* HelloWorldActivity wants to be notified whether the task is completed (successfully or not)
 	 * or if the dialog is cancelled.
 	 */
 	private PostActionResultListener mPostActionResultListener;
@@ -35,9 +35,9 @@ DialogInterface.OnClickListener
 	}
 	
 	/** Sets the PostActionResultListener that waits for the dialog to be canceled or the 
-	 * task to be complete. WWWsAppActivity implements this interface.
+	 * task to be complete. HelloWorldActivity implements this interface.
 	 * 
-	 * @param parl (WWWsAppActivity)
+	 * @param parl (HelloWorldActivity)
 	 */
 	public void setPostActionResultListener(PostActionResultListener parl)
 	{
@@ -75,7 +75,7 @@ DialogInterface.OnClickListener
 
 	@Override
 	/** Invokes the method onPostActionResult on the PostActionResultListener implementor.
-	 *  WWWsAppActivity implements PostActionResultListener.
+	 *  HelloWorldActivity implements PostActionResultListener.
 	 */
 	public void onRemovePostTaskCompleted(boolean error, String message, PostType removePostType) 
 	{

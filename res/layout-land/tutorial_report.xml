@@ -46,7 +46,6 @@
                 android:layout_weight="1.00"
                 android:background="@drawable/tutorial_textview_background"
                 android:drawablePadding="5dp"
-                android:drawableRight="@drawable/weather_clouds"
                 android:padding="8dp"
                 android:text="@string/tutorial_report_done" />
 

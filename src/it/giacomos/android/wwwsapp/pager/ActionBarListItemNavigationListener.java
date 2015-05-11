@@ -1,6 +1,6 @@
 package it.giacomos.android.wwwsapp.pager;
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.network.state.ViewType;
 import android.app.ActionBar.OnNavigationListener;
 import android.view.View;
@@ -9,10 +9,10 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 public class ActionBarListItemNavigationListener implements OnItemSelectedListener
 {
-	final WWWsAppActivity mActivity;
+	final HelloWorldActivity mActivity;
 	ViewType mMode;
 
-	public ActionBarListItemNavigationListener(WWWsAppActivity a)
+	public ActionBarListItemNavigationListener(HelloWorldActivity a)
 	{
 		mActivity = a;
 		mMode = ViewType.DAILY_TABLE;

@@ -4,7 +4,7 @@ import android.support.v4.app.DialogFragment;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.locationUtils.LocationService;
 import it.giacomos.android.wwwsapp.locationUtils.LocationServiceAddressUpdateListener;

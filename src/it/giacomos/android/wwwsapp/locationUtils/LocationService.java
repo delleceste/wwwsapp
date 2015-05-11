@@ -66,7 +66,7 @@ GeocodeAddressUpdateListener, ConnectionCallbacks, OnConnectionFailedListener
 	public boolean connect()
 	{
 		/* servicesAvailable has an empty implementation.
-		 * GooglePlay services check is done in WWWsAppActivity.
+		 * GooglePlay services check is done in HelloWorldActivity.
 		 */
 		boolean result = true;
 //		result = servicesAvailable();

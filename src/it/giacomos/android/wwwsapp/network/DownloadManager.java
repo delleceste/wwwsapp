@@ -1,6 +1,6 @@
 package it.giacomos.android.wwwsapp.network;
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.network.Data.DownloadListener;
 import it.giacomos.android.wwwsapp.network.state.BitmapType;
 import it.giacomos.android.wwwsapp.network.state.Offline;
@@ -32,12 +32,12 @@ public class DownloadManager  implements NetworkStatusMonitorListener,
 		mDownloadListener = dl;
 	}
 	
-	public void onPause(WWWsAppActivity activity)
+	public void onPause(HelloWorldActivity activity)
 	{
 		activity.unregisterReceiver(m_networkStatusMonitor);
 	}
 	
-	public void onResume(WWWsAppActivity activity)
+	public void onResume(HelloWorldActivity activity)
 	{
 		m_networkStatusMonitor = new NetworkStatusMonitor(this);
 		activity.registerReceiver(m_networkStatusMonitor, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));

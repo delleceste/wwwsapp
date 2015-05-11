@@ -2,7 +2,7 @@ package it.giacomos.android.wwwsapp.widgets.map.report;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.gcm.GcmRegistrationManager;
 import it.giacomos.android.wwwsapp.network.state.Urls;
@@ -32,7 +32,7 @@ public class ReportRequestDialogClickListener implements OnClickListener {
 	public void onClick(DialogInterface dialogI, int whichButton) 
 	{
 		Dialog d = (Dialog) dialogI;
-		WWWsAppActivity oActivity = (WWWsAppActivity) mReportRequestDialogFragment.getActivity();
+		HelloWorldActivity oActivity = (HelloWorldActivity) mReportRequestDialogFragment.getActivity();
 		LatLng llng = mReportRequestDialogFragment.getLatLng();
 		if(llng == null) /* should not be null since the dialog waits for location before enabling the ok button */
 			return;

@@ -1,6 +1,6 @@
 package it.giacomos.android.wwwsapp.rainAlert;
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -16,7 +16,7 @@ public class RainNotificationBuilder {
 	public Notification build(Context ctx, double dbZ, int iconId, double latitude, double longitude)
 	{
 		String message;
-		Intent resultIntent = new Intent(ctx, WWWsAppActivity.class);
+		Intent resultIntent = new Intent(ctx, HelloWorldActivity.class);
 		resultIntent.putExtra("ptLatitude", latitude);
 		resultIntent.putExtra("ptLongitude", longitude);
 
@@ -52,7 +52,7 @@ public class RainNotificationBuilder {
 		// your application to the Home screen.
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(ctx);
 		// Adds the back stack for the Intent (but not the Intent itself)
-		stackBuilder.addParentStack(WWWsAppActivity.class);
+		stackBuilder.addParentStack(HelloWorldActivity.class);
 		// Adds the Intent that starts the Activity to the top of the stack
 		stackBuilder.addNextIntent(resultIntent);
 

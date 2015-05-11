@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 import it.giacomos.android.wwwsapp.MyAlertDialogFragment;
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.locationUtils.GeocodeAddressTask;
 import it.giacomos.android.wwwsapp.locationUtils.GeocodeAddressUpdateListener;
@@ -68,7 +68,7 @@ OnClickListener
 	private OMapFragment mMapFrag;
 	private ReportOverlayTask mReportOverlayTask;
 	private MapBaloonInfoWindowAdapter mMapBaloonInfoWindowAdapter;
-	private ReportRequestListener mMyReportRequestListener; /* WWWsAppActivity */
+	private ReportRequestListener mMyReportRequestListener; /* HelloWorldActivity */
 	private GeocodeAddressTask mGeocodeAddressTask;
 	private ReportUpdater mReportUpdater;
 	private float mMapTilt;
@@ -80,7 +80,7 @@ OnClickListener
 	public ReportOverlay(OMapFragment oMapFragment) 
 	{
 		mMapFrag = oMapFragment;
-		mMyReportRequestListener = null; /* WWWsAppActivity */
+		mMyReportRequestListener = null; /* HelloWorldActivity */
 		mReportOverlayTask = null;
 		mMapBaloonInfoWindowAdapter = new MapBaloonInfoWindowAdapter(mMapFrag.getActivity());
 		mGeocodeAddressTask = null;
@@ -421,7 +421,7 @@ OnClickListener
 
 	public void setOnReportRequestListener(ReportRequestListener rrl)
 	{
-		mMyReportRequestListener = rrl;  /* WWWsAppActivity */
+		mMyReportRequestListener = rrl;  /* HelloWorldActivity */
 	}
 
 	private void mStartGeocodeAddressTask(Marker marker)
@@ -453,8 +453,8 @@ OnClickListener
 		}
 	}
 
-	/** WWWsAppActivity implements ReportRequestListener.
-	 *  onInfoWindowClick invokes WWWsAppActivity callbacks in order to perform
+	/** HelloWorldActivity implements ReportRequestListener.
+	 *  onInfoWindowClick invokes HelloWorldActivity callbacks in order to perform
 	 *  specific actions such as show dialog fragments which are appropriate for
 	 *  the action represented by the baloon.
 	 */

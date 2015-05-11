@@ -7,10 +7,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.network.state.ViewType;
-import it.giacomos.android.wwwsapp.slidingtablayout.ForecastTabbedFragment;
 
 public class ActionBarManager
 {
@@ -29,7 +28,7 @@ public class ActionBarManager
 		return mType;
 	}
 
-	public ActionBarManager(WWWsAppActivity a)
+	public ActionBarManager(HelloWorldActivity a)
 	{
 		mActivity = a;
 		mActionBarListItemNavigationListener = new ActionBarListItemNavigationListener(mActivity);
@@ -48,7 +47,7 @@ public class ActionBarManager
 		
 //		Log.e("ActionBarManager.init", "selected Drawer Item " + selectedDrawerItem + " force " + forceDrawerItem);
 		/* avoid calling drawerItemChanged if selectedDrawerItem is 0 because
-		 * drawerItemChanged has already been called by WWWsAppActivity.init at 
+		 * drawerItemChanged has already been called by HelloWorldActivity.init at 
 		 * this point.
 		 */
 		if(forceDrawerItem < 0 && selectedDrawerItem != 0) /* otherwise call drawerItemChange afterwards */
@@ -148,7 +147,7 @@ public class ActionBarManager
 		}
 	}
 	
-	private WWWsAppActivity mActivity;
+	private HelloWorldActivity mActivity;
 	private SpinnerAdapter mSpinnerAdapter;
 	private int mType;
 }

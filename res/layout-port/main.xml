@@ -71,7 +71,7 @@
         </android.support.v7.widget.Toolbar>
 
         <fragment
-            android:id="@+id/forecastTabbedFragment"
+            android:id="@+id/layerListFragment"
             android:name="it.giacomos.android.wwwsapp.slidingtablayout.ForecastTabbedFragment"
             android:layout_width="match_parent"
             android:layout_below="@id/toolbar"
@@ -94,6 +94,7 @@
         android:layout_height="72dp"
         android:layout_alignParentEnd="false"
         android:layout_alignParentStart="false"
+        android:layout_alignParentLeft="false"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="16dp"

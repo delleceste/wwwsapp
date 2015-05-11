@@ -27,33 +27,7 @@ public class DataPoolCacheUtils
 
 	public DataPoolCacheUtils()
 	{
-		/* to be compatible with the past versions who used to save on the internal storage
-		 * the images and text with the id of the associated views
-		 */
-		textIdMap.put(ViewType.TODAY_SYMTABLE, R.id.todayImageView);
-		textIdMap.put(ViewType.TOMORROW_SYMTABLE, R.id.tomorrowImageView);
-		textIdMap.put(ViewType.TWODAYS_SYMTABLE, R.id.twoDaysImageView);
-		textIdMap.put(ViewType.THREEDAYS_SYMTABLE, R.id.threeDaysImageView);
-		textIdMap.put(ViewType.FOURDAYS_SYMTABLE, R.id.fourDaysImageView);
-
-		/* bitmapIdMap must contain entries also for bitmap types that are treated in
-		 * a special way, such as the radar image, whose file name must be 
-		 * lastRadarImage.bmp in order to stay compatible with previous versions of the
-		 * app. The value -1 is not actually used (see makeFileName
-		 */
-		bitmapIdMap.put(BitmapType.RADAR, -1);
-
-		textIdMap.put(ViewType.HOME, R.id.homeTextView);
-		textIdMap.put(ViewType.TODAY, R.id.todayTextView);
-		textIdMap.put(ViewType.TOMORROW, R.id.tomorrowTextView);
-		textIdMap.put(ViewType.TWODAYS, R.id.twoDaysTextView);
-		textIdMap.put(ViewType.THREEDAYS, R.id.threeDaysTextView);
-		textIdMap.put(ViewType.FOURDAYS, R.id.fourDaysTextView);
-		/* As stated above for the radar bitmap, let's put two fictitious entries for
-		 * the observations (daily and latest) and for the webcams (osmer and other)
-		 */
-		textIdMap.put(ViewType.DAILY_TABLE, -1);
-		textIdMap.put(ViewType.LATEST_TABLE, -1);
+		
 	}
 
 	/* restore all data from the storage */

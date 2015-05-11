@@ -51,8 +51,6 @@ public class ConnectivityChangedReceiver extends BroadcastReceiver
 		if(s.rainNotificationEnabled() && netinfo != null && netinfo.isConnected())
 		{
 			Log.e("ConnectivityChangedReceiver", "starting radarSyncRainDetectIntentService");
-			Intent radarSyncRainDetectIntent = new Intent(context, RadarSyncAndRainGridDetectService.class);
-			context.startService(radarSyncRainDetectIntent);
 		}
 		else
 			Log.e("ConnectivityChangedReceiver", "not starting radarSyncRainDetectIntentService " + netinfo);

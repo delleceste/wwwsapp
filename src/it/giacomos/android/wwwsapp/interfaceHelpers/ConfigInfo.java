@@ -1,6 +1,6 @@
 package it.giacomos.android.wwwsapp.interfaceHelpers;
 
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.locationUtils.LocationService;
 import it.giacomos.android.wwwsapp.network.DownloadStatus;
 
@@ -15,7 +15,7 @@ public class ConfigInfo {
 	public String gatherInfo(Activity mActivity) 
 	{
 		String info = "";
-		LocationService ls = (LocationService) ((WWWsAppActivity) mActivity).getLocationService();
+		LocationService ls = (LocationService) ((HelloWorldActivity) mActivity).getLocationService();
 
 		info += "<h5>Location service</h5>";
 		info += "<p>";

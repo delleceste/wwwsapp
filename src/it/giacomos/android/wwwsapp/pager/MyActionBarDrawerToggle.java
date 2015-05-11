@@ -1,16 +1,15 @@
 package it.giacomos.android.wwwsapp.pager;
 
-import it.giacomos.android.wwwsapp.R;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 public class MyActionBarDrawerToggle extends ActionBarDrawerToggle
 {
-	private final ActionBarActivity mActivity;
+	private final AppCompatActivity mActivity;
 	
-	public MyActionBarDrawerToggle(ActionBarActivity a, DrawerLayout drawerLayout,
+	public MyActionBarDrawerToggle(AppCompatActivity a, DrawerLayout drawerLayout,
 			int iconDrawer, int iconDrawerOpen, int iconDrawerClose)
 	{
 		super(a, drawerLayout, iconDrawer, iconDrawerOpen);

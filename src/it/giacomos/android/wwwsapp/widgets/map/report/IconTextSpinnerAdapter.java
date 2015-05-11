@@ -1,7 +1,6 @@
 package it.giacomos.android.wwwsapp.widgets.map.report;
 
 import it.giacomos.android.wwwsapp.R;
-import it.giacomos.android.wwwsapp.observations.SunsetCalculator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;

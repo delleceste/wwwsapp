@@ -4,7 +4,7 @@ package it.giacomos.android.wwwsapp.widgets.map.report.network;
  * 
  * @author giacomo
  *
- * WWWsAppActivity implements this interface.
+ * HelloWorldActivity implements this interface.
  */
 public interface PostActionResultListener 
 {

@@ -1,24 +1,19 @@
 package it.giacomos.android.wwwsapp.interfaceHelpers;
 
 import it.giacomos.android.wwwsapp.MyAlertDialogFragment;
-import it.giacomos.android.wwwsapp.WWWsAppActivity;
+import it.giacomos.android.wwwsapp.HelloWorldActivity;
 import it.giacomos.android.wwwsapp.R;
-import it.giacomos.android.wwwsapp.locationUtils.GeocodeAddressTask;
 import it.giacomos.android.wwwsapp.locationUtils.GeocodeAddressUpdateListener;
 import it.giacomos.android.wwwsapp.locationUtils.LocationInfo;
 import it.giacomos.android.wwwsapp.preferences.SettingsActivity;
-import it.giacomos.android.wwwsapp.widgets.SituationImage;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 
 public class MenuActionsManager implements GeocodeAddressUpdateListener
@@ -28,7 +23,7 @@ public class MenuActionsManager implements GeocodeAddressUpdateListener
 	private static final String AUTHOR_URL = "http://www.giacomos.it/curriculum/index.html";
 	private static final String DOC_URL = "http://www.giacomos.it/android/meteofvg/index.html";
 	
-	public MenuActionsManager(WWWsAppActivity activity)
+	public MenuActionsManager(HelloWorldActivity activity)
 	{
 		mActivity = activity;
 	}
@@ -81,7 +76,7 @@ public class MenuActionsManager implements GeocodeAddressUpdateListener
 
 		case R.id.menu_settings:
 			Intent prefsActivityIntent = new Intent(mActivity, SettingsActivity.class);
-			mActivity.startActivityForResult(prefsActivityIntent, WWWsAppActivity.SETTINGS_ACTIVITY_FOR_RESULT_ID);	
+			mActivity.startActivityForResult(prefsActivityIntent, HelloWorldActivity.SETTINGS_ACTIVITY_FOR_RESULT_ID);	
 			break;
 		}
 		return true;
@@ -115,5 +110,5 @@ public class MenuActionsManager implements GeocodeAddressUpdateListener
 		mActivity.showDialog(TEXT_DIALOG, data);
 	}
 
-	private WWWsAppActivity mActivity;
+	private HelloWorldActivity mActivity;
 }
