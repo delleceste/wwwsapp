@@ -50,7 +50,7 @@ public class LayerListAdapter extends ArrayAdapter<LayerItemData>
 	@Override
 	public View getView(int position, View itemView, ViewGroup parent) 
 	{
-		Log.e("LayerListAdapter.getView", "enter@!");
+		Log.e("LayerListAdapter.getView", "enter!");
 		ViewHolder  mViewHolder = null; 
 
 		if(itemView == null)
