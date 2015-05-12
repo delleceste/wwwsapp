@@ -49,7 +49,6 @@ ReportUpdateTaskListener, ConnectionCallbacks, OnConnectionFailedListener
 		mLastReportUpdatedAt = 0;
 		mReportUpdateTask = null;
 		DataPoolCacheUtils dpcu = new DataPoolCacheUtils();
-		onReportUpdateTaskComplete(false, dpcu.loadFromStorage(ViewType.REPORT, ctx));
 	}
 
 
@@ -199,7 +198,7 @@ ReportUpdateTaskListener, ConnectionCallbacks, OnConnectionFailedListener
 			//			Log.e("ReportUpdater.onPostExecute", "saving to cache: " + data);
 			/* save data into cache */
 			DataPoolCacheUtils dataPoolCUtils = new DataPoolCacheUtils();
-			dataPoolCUtils.saveToStorage(data.getBytes(), ViewType.REPORT, mContext);
+			/// dataPoolCUtils.saveToStorage(data.getBytes(), ViewType.REPORT, mContext);
 			mLastReportUpdatedAt = System.currentTimeMillis();
 		}
 		else

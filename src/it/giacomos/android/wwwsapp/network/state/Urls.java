@@ -1,167 +1,53 @@
 package it.giacomos.android.wwwsapp.network.state;
 
-import java.util.Locale;
 import java.lang.String;
 
 public class Urls {
 	public Urls() { }
 	
-	public String situationUrl()
+	public String layersListUrl()
 	{
-		return "http://www.giacomos.it/wwwsapp/data/situazione.html";
+		return "http://www.giacomos.it/wwwsapp/get_layers_list.php";
 	}
 	
-	public String todayUrl()
+	public String layerDescUrl()
 	{
-		return "http://www.giacomos.it/wwwsapp/data/today_full.html";
+		return "http://www.giacomos.it/wwwsapp/get_layer_desc.php";
 	}
 
-	public String tomorrowUrl()
+	public String layerBitmapUrl()
 	{
-		return "http://www.giacomos.it/wwwsapp/data/tomorrow_full.html";
+		return "http://www.giacomos.it/wwwsapp/get_layer_bitmap.php";
 	}
 
-	public String twoDaysUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/data/twodays_full.html";
+	public String getAppStoreUrl() {
+		return "";
 	}
 
-	public String todaySymtableUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/data/today_symtable.txt";
-	}
-	
-	public String tomorrowSymtableUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/data/tomorrow_symtable.txt";
+	public String postReportUrl() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public String twoDaysSymtableUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/data/twodays_symtable.txt";
-	}
-	
-	public String dailyTableUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/daily_observations.txt";
+	public String getReportUrl() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public String latestTableUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/latest_observations.txt";
+	public String getRemovePostUrl() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public String radarImageUrl() 
-	{
-		return "http://www.giacomos.it/wwwsapp/get_last_radar_image_png.php";
-	}
-	
-	public String radarHistoricalImagesFolderUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/data/radar/";
-	}
-	
-	public String radarHistoricalFileListUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/get_radar_files.php";
-	}
-	
-	public String postReportUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/publish_report.php";
-	}
-	
-	/**
-	 * since version 2.6.1, invokes get_report_2_6_1 because the report 
-	 * response contains the active users list.
-	 * 
-	 * since version 2.6.3 invokes get_report_2_6_3 that groups active users
-	 * by area, returning the most recently active users in an area, excluding
-	 * all other users less recent whose distance from the most recent is less
-	 * than a threshold in km.
-	 * 
-	 */
-	public String getReportUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/get_report_2_6_3.php";
-	}
-	
 	public String getPostReportRequestUrl() {
-		
-		return "http://www.giacomos.it/wwwsapp/publish_request.php";
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getUpdateMyLocationUrl() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
-	public String getUpdateMyLocationUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/update_my_location.php";
-	}
-	
-	public String getRemovePostUrl() 
-	{
-		return "http://www.giacomos.it/wwwsapp/remove_post.php";
-	}
-	
-	public String webcamImagesPath()
-	{
-		return "http://www-old.osmer.fvg.it/COMMON/WEBCAM/Webcam";
-	}
-	
-	public String webcamMapData()
-	{
-		return "http://www-old.osmer.fvg.it/GOOGLE/DatiWebcams1.php";
-	}
-	
-	public String webcamsListXML()
-	{
-		/*  NEW: www.meteo.fvg.it/json/webcam_json.php?tipo=2 */
-		return "http://www-old.osmer.fvg.it/GOOGLE/WebcamsList.xml";
-	}
-
-	public String newsUrl() {
-		return "http://www.giacomos.it/wwwsapp/get_news.php";
-	}
-
-	public String meteoFvgBaseUrl()
-	{
-		return "http://www.giacomos.it/wwwsapp/";
-	}
-
-	public String threeDaysSymtableUrl() 
-	{
-		return "http://www.giacomos.it/wwwsapp/data/piu_3_symtable.txt";
-	}
-
-	public String fourDaysSymtableUrl() 
-	{
-		return "http://www.giacomos.it/wwwsapp/data/piu_4_symtable.txt";
-	}
-
-	public String threeDaysUrl() 
-	{
-		return "http://www.giacomos.it/wwwsapp/data/piu_3.html";
-	}
-	
-	public String fourDaysUrl() 
-	{
-		return "http://www.giacomos.it/wwwsapp/data/piu_4.html";
-	}
-
-	public String personalMessageFetchUrl() 
-	{
-		return "http://www.giacomos.it/wwwsapp/get_configuration.php";
-	}
-
-	public String getMeteoFVGUrl() {
-		return "http://m.meteo.fvg.it/home.php";
-	}
-	
-	public String getMeteoFVGAppStoreUrl()
-	{
-		return "https://play.google.com/store/apps/details?id=it.giacomos.android.wwwsapp";
-	}
-
-	public String getMeteoFVGProAppStoreUrl() {
-		return "https://play.google.com/store/apps/details?id=it.giacomos.android.wwwsapp.pro";
-	}
 	
 }

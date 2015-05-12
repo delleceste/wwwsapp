@@ -20,7 +20,7 @@ public class PersonalMessageManager
 			Toast.makeText(helloWorldActivity, R.string.service_stopped_app_blocked, Toast.LENGTH_LONG).show();
 		
 		Intent i = new Intent(helloWorldActivity, PersonalMessageActivity.class);
-		i.putExtra("title", data.title);
+		i.putExtra("name", data.title);
 		i.putExtra("message", data.message);
 		i.putExtra("date", data.date);
 		helloWorldActivity.startActivity(i);

@@ -57,7 +57,7 @@ public class PersonalMessageDataDecoder
 									Node n = childNodes.item(i);
 									Element e = (Element ) n;
 
-									if(e.getTagName().compareTo("title") == 0 )
+									if(e.getTagName().compareTo("name") == 0 )
 										mPersonalMessageData.title = e.getTextContent();
 									else if(e.getTagName().compareTo("message") == 0 )
 										mPersonalMessageData.message = e.getTextContent();
@@ -67,7 +67,7 @@ public class PersonalMessageDataDecoder
 								
 //								Log.e("PersonalMessageDataDecoder", "date " + mPersonalMessageData.date + 
 //										", text " + mPersonalMessageData.message + 
-//										", title " + mPersonalMessageData.title + " blockin " + mPersonalMessageData.blocking);
+//										", name " + mPersonalMessageData.title + " blockin " + mPersonalMessageData.blocking);
 							}
 						}
 					} 

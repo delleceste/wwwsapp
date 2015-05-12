@@ -41,7 +41,7 @@ public class PersonalMessageActivity extends Activity implements OnClickListener
 		Button b = (Button) findViewById(R.id.btClosePersonalActivity);
 		b.setOnClickListener(this);
 		
-		titleV.setText(Html.fromHtml(i.getStringExtra("title")));
+		titleV.setText(Html.fromHtml(i.getStringExtra("name")));
 		msgV.setText(Html.fromHtml(i.getStringExtra("message")));
 		dateV.setText(i.getStringExtra("date"));
 		

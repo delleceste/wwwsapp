@@ -933,4 +933,10 @@ mio android id è il seguente:\n\n
         alla versione di Meteo.FVG pro:\nhttps://play.google.com/store/apps/details?id=it.giacomos.android.wwwsapp.pro"\n\n
         </string>
     
+    
+    <string name="install">Installa</string>
+    <string name="update">Aggiorna</string>
+    <string name="delete">Rimuovi</string>
+    
+    
 </resources>

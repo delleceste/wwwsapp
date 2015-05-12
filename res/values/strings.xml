@@ -757,4 +757,10 @@ Please note: requests devoid of the full name and date will be ignored.\n\n</str
     <string name="title_layer_list">Layers</string>
     <string name="title_layer_detail">Layer Detail</string>
 
+    <string name="install">Install</string>
+    <string name="update">Update</string>
+    <string name="delete">Remove</string>
+    
+    
+    
 </resources>

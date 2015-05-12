@@ -5,16 +5,13 @@ import it.giacomos.android.wwwsapp.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.DialogFragment;
+import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
 
 public class MyAlertDialogFragment extends DialogFragment implements DialogInterface.OnClickListener
 {
@@ -24,40 +21,40 @@ public class MyAlertDialogFragment extends DialogFragment implements DialogInter
 	
 	private int mOption = 0;
 
-	public static void MakeGenericError(int message, FragmentActivity a, int option)
+	public static void MakeGenericError(int message, Activity a, int option)
 	{
 		MyAlertDialogFragment.newInstance(R.string.error_message, message, R.drawable.ic_dialog_alert, option)
-		.show(a.getSupportFragmentManager(), "ErrorDialog");
+		.show(a.getFragmentManager(), "ErrorDialog");
 	}
 
-	public static void MakeGenericError(int message, FragmentActivity a)
+	public static void MakeGenericError(int message, Activity a)
 	{
 		MyAlertDialogFragment.newInstance(R.string.error_message, message, R.drawable.ic_dialog_alert)
-		.show(a.getSupportFragmentManager(), "ErrorDialog");
+		.show(a.getFragmentManager(), "ErrorDialog");
 	}
 
-	public static void MakeGenericError(String message, FragmentActivity a)
+	public static void MakeGenericError(String message, Activity a)
 	{
 		MyAlertDialogFragment.newInstance(R.string.error_message, message, R.drawable.ic_dialog_alert)
-		.show(a.getSupportFragmentManager(), "ErrorDialog");
+		.show(a.getFragmentManager(), "ErrorDialog");
 	}
 
-	public static void MakeGenericInfo(int message, FragmentActivity a)
+	public static void MakeGenericInfo(int message, Activity a)
 	{
 		MyAlertDialogFragment.newInstance(R.string.info, message, R.drawable.ic_dialog_info)
-		.show(a.getSupportFragmentManager(), "InfoDialog");
+		.show(a.getFragmentManager(), "InfoDialog");
 	}
 
-	public static void MakeGenericInfo(String message, FragmentActivity a)
+	public static void MakeGenericInfo(String message, Activity a)
 	{
 		MyAlertDialogFragment.newInstance(R.string.info, message, R.drawable.ic_dialog_info)
-		.show(a.getSupportFragmentManager(), "InfoDialog");
+		.show(a.getFragmentManager(), "InfoDialog");
 	}
 
 	public static MyAlertDialogFragment newInstance(int title, int message, int icon, int option) {
 		MyAlertDialogFragment frag = new MyAlertDialogFragment();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
+		args.putInt("name", title);
 		args.putInt("message", message);
 		args.putInt("icon", icon);
 		args.putInt("option", option);
@@ -68,7 +65,7 @@ public class MyAlertDialogFragment extends DialogFragment implements DialogInter
 	public static MyAlertDialogFragment newInstance(int title, int message, int icon) {
 		MyAlertDialogFragment frag = new MyAlertDialogFragment();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
+		args.putInt("name", title);
 		args.putInt("message", message);
 		args.putInt("icon", icon);
 		frag.setArguments(args);
@@ -78,7 +75,7 @@ public class MyAlertDialogFragment extends DialogFragment implements DialogInter
 	public static MyAlertDialogFragment newInstance(int title, String message, int icon) {
 		MyAlertDialogFragment frag = new MyAlertDialogFragment();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
+		args.putInt("name", title);
 		args.putString("message_str", message);
 		args.putInt("icon", icon);
 		frag.setArguments(args);
@@ -92,7 +89,7 @@ public class MyAlertDialogFragment extends DialogFragment implements DialogInter
 		int message = -1;
 		String msg = "";
 		Bundle bu =  getArguments();
-		int title = bu.getInt("title");
+		int title = bu.getInt("name");
 		if(bu.containsKey("message"))
 			message = bu.getInt("message");
 		else if(bu.containsKey("message_str"))

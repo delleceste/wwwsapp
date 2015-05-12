@@ -1135,25 +1135,14 @@ OnItemSelectedListener /* main spinner */
 			mSettings.setPersonalMessageDownloadedNow();
 		PersonalMessageData data = new PersonalMessageDataDecoder(d).getData();
 		//		Log.e("HelloWorldActivity.onPersonalMessageUpdate", "raw data \"" + d + "\"");
-		if(data.isValid()) /* title, message, date must be not empty */
+		if(data.isValid()) /* name, message, date must be not empty */
 			new PersonalMessageManager(this, data);
-	}
-
-	public void openMeteoFVGUrl() 
-	{
-		Intent i = new Intent(Intent.ACTION_VIEW);
-		i.setData(Uri.parse(new Urls().getMeteoFVGUrl()));
-		startActivity(i);
 	}
 
 	public void shareMeteoFVGApp() 
 	{
 		String appUrl; /* free or pro */
-		if(getApplicationContext().getPackageName().endsWith("pro"))
-			appUrl = new Urls().getMeteoFVGProAppStoreUrl();
-		else
-			appUrl = new Urls().getMeteoFVGAppStoreUrl();
-
+		appUrl = new Urls().getAppStoreUrl();
 		Intent sendIntent = new Intent();
 		sendIntent.setAction(Intent.ACTION_SEND);
 		sendIntent.putExtra(Intent.EXTRA_TEXT, appUrl);

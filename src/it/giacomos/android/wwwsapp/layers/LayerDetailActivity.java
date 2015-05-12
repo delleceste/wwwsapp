@@ -40,8 +40,8 @@ public class LayerDetailActivity extends Activity {
 			// Create the detail fragment and add it to the activity
 			// using a fragment transaction.
 			Bundle arguments = new Bundle();
-			arguments.putString(LayerDetailFragment.ARG_ITEM_ID, getIntent()
-					.getStringExtra(LayerDetailFragment.ARG_ITEM_ID));
+			arguments.putString(LayerDetailFragment.ARG_ITEM_DATA, getIntent()
+					.getStringExtra(LayerDetailFragment.ARG_ITEM_DATA));
 			LayerDetailFragment fragment = new LayerDetailFragment();
 			fragment.setArguments(arguments);
 			getFragmentManager().beginTransaction()

@@ -49,12 +49,12 @@ public class MenuActionsManager implements GeocodeAddressUpdateListener
 			text += "</h6>\n" + res.getString(R.string.popup_app_info);
 			
 	//		data.putString("text", text);
-	//		data.putString("title", res.getString(R.string.popup_info_title));
+	//		data.putString("name", res.getString(R.string.popup_info_title));
 			MyAlertDialogFragment.MakeGenericInfo(Html.fromHtml(text).toString(), mActivity);
 			break;
 			
 		case R.id.menu_data_update_info:
-		//	data.putString("title", res.getString(R.string.popup_data_update_title));
+		//	data.putString("name", res.getString(R.string.popup_data_update_title));
 			MyAlertDialogFragment.MakeGenericInfo(Html.fromHtml(mActivity.getString(R.string.popup_data_update_info)).toString(), mActivity);
 			break;
 		case R.id.menu_online_guide:
@@ -105,7 +105,7 @@ public class MenuActionsManager implements GeocodeAddressUpdateListener
 					locationInfo.error + "</cite></p>";
 
 		Bundle data = new Bundle();
-		data.putString("title", res.getString(R.string.popup_position_title));
+		data.putString("name", res.getString(R.string.popup_position_title));
 		data.putString("text", message);
 		mActivity.showDialog(TEXT_DIALOG, data);
 	}

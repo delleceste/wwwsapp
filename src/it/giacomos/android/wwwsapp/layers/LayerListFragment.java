@@ -37,7 +37,7 @@ public class LayerListFragment extends ListFragment {
 	 * The current activated item position. Only used on tablets.
 	 */
 	private int mActivatedPosition = ListView.INVALID_POSITION;
-
+	
 	/**
 	 * A callback interface that all activities containing this fragment must
 	 * implement. This mechanism allows activities to be notified of item
@@ -47,7 +47,7 @@ public class LayerListFragment extends ListFragment {
 		/**
 		 * Callback for when an item has been selected.
 		 */
-		public void onItemSelected(String id);
+		public void onItemSelected(int position);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class LayerListFragment extends ListFragment {
 	 */
 	private static Callbacks sDummyCallbacks = new Callbacks() {
 		@Override
-		public void onItemSelected(String id) {
+		public void onItemSelected(int position) {
 		}
 	};
 
@@ -66,16 +66,10 @@ public class LayerListFragment extends ListFragment {
 	 */
 	public LayerListFragment() {
 	}
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		// TODO: replace with a real list adapter.
-		LayerListAdapter lad = new LayerListAdapter(this.getActivity());
-		setListAdapter(lad);
-		lad.addData(new LayerItemData("Title1", "Short desc 1", "Giacomo", 1, "2015-05-10"));
-		lad.addData(new LayerItemData("Title2", "Short desc 2", "Giacomo", 1.5f, "2015-05-09"));
 	}
 
 	@Override
@@ -118,7 +112,7 @@ public class LayerListFragment extends ListFragment {
 
 		// Notify the active callbacks interface (the activity, if the
 		// fragment is attached to one) that an item has been selected.
-		mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+		mCallbacks.onItemSelected(position);
 	}
 
 	@Override
