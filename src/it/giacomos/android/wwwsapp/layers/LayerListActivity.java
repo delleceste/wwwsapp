@@ -42,7 +42,8 @@ import android.view.MenuItem;
  */
 public class LayerListActivity extends Activity implements
 LayerListFragment.Callbacks, LayerFetchTaskListener,
-NetworkStatusMonitorListener
+NetworkStatusMonitorListener, 
+LayerActionListener
 {
 
 	public static final String CACHE_LIST_DIR = "layerlistcache/";
@@ -226,5 +227,23 @@ NetworkStatusMonitorListener
 			mLayerFetchTask.cancel(true);
 		}
 
+	}
+
+	@Override
+	public void onActionRequested(String layerName, int action)
+	{
+		if(action == LayerListAdapter.ACTION_DOWNLOAD)
+		{
+			
+		}
+		else if(action == LayerListAdapter.ACTION_CANCEL_DOWNLOAD)
+		{
+			
+		}
+		else if(action == LayerListAdapter.ACTION_REMOVE)
+		{
+			
+		}
+		
 	}
 }

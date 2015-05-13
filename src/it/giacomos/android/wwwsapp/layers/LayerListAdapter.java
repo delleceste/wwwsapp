@@ -7,6 +7,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,10 +16,13 @@ import android.widget.TextView;
 
 
 
-public class LayerListAdapter extends ArrayAdapter<LayerItemData> 
+public class LayerListAdapter extends ArrayAdapter<LayerItemData> implements OnClickListener 
 {
 	private final Context context;
 
+	public static final int ACTION_DOWNLOAD = 0;
+	public static final int ACTION_CANCEL_DOWNLOAD = 0;
+	public static final int ACTION_REMOVE = 0;
 
 	static class ViewHolder {
 		public TextView title, desc;
@@ -93,7 +97,14 @@ public class LayerListAdapter extends ArrayAdapter<LayerItemData>
 		else if(d.flags == LayerItemFlags.LAYER_UPGRADABLE)
 			mViewHolder.button.setText(R.string.update);
 			
+		mViewHolder.button.setOnClickListener(this);
 			
 		return itemView;
+	}
+
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
