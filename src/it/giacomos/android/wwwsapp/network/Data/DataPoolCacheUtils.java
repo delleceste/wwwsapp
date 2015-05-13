@@ -73,7 +73,8 @@ public class DataPoolCacheUtils
 		{
 			FileOutputStream fos;
 			filename = getFilePath(filename, ctx);
-			fos = ctx.openFileOutput(filename, Context.MODE_PRIVATE);
+			File fout = new File(filename);
+			fos = new FileOutputStream(fout);
 			fos.write(bytes);
 			fos.close();
 		} 

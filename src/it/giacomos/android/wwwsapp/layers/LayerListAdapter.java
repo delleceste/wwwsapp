@@ -31,38 +31,35 @@ public class LayerListAdapter extends ArrayAdapter<LayerItemData>
 		this.context = context;
 	}
  
-	int findItemData(String title)
+	LayerItemData findItemData(String name)
 	{
 		for(int i = 0; i < getCount(); i++)
 		{
-			if(title.compareTo(this.getItem(i).name) == 0)
-				return i;
+			LayerItemData d = getItem(i);
+			if(name.compareTo(d.name) == 0)
+				return d;
 		}
-		return -1;
+		return null;
 	}
 	
 	public void update(LayerItemData d)
 	{
-		int i = findItemData(d.name);
-		if(i > -1)
-			setData(d, i);
-		else
-			add(d);
-		notifyDataSetChanged();
-	}
-	
-	public void setData(LayerItemData d, int pos)
-	{
-		if(pos < this.getCount())
+		LayerItemData otherD = findItemData(d.name);
+		if(otherD != null)
 		{
-			setData(d, pos);
+			otherD = d;
 			notifyDataSetChanged();
+		}
+		else
+		{
+			add(d);
 		}
 	}
 	
 	@Override
 	public View getView(int position, View itemView, ViewGroup parent) 
 	{
+		Log.e("LayerListAdapter.getVIew", "ENTER");
 		ViewHolder  mViewHolder = null; 
 
 		if(itemView == null)
@@ -85,8 +82,9 @@ public class LayerListAdapter extends ArrayAdapter<LayerItemData>
 
 		/* updates, if present */
 		LayerItemData d = this.getItem(position);
-		mViewHolder.title.setText(d.name);
+		mViewHolder.title.setText(d.title);
 		mViewHolder.desc.setText(d.short_desc);
+		Log.e("LayerListAdapter.getVIew", "setBacground drawaw " + d.icon.getBitmap().getByteCount());
 		mViewHolder.image.setBackgroundDrawable(d.icon);
 		if(d.flags == LayerItemFlags.LAYER_INSTALLED)
 			mViewHolder.button.setText(R.string.delete);

@@ -59,7 +59,7 @@ public class Loader
 			}
 			for(String fn : layerNames)
 			{
-				
+				Log.e("Loader.getInstalledLayers", "found layer " + fn);
 			}
 		}
 		return ret;

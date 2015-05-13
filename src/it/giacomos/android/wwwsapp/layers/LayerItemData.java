@@ -8,20 +8,24 @@ public class LayerItemData
 			String sd, 
 			String au, 
 			float ver, 
-			String d,
-			String _rawXml)
+			String d)
 	{
 		name = ti;
 		short_desc = sd;
 		author = au;
 		version = ver;
 		date = d;
-		rawXml = _rawXml;
+	}
+	
+	public boolean isValid()
+	{
+		return name.length() > 0;
 	}
 	
 	public LayerItemData()
 	{
-		
+		name = short_desc = author = date = "";
+		version = 0.0f;
 	}
 	
 	public LayerItemData(String ti,
@@ -44,7 +48,7 @@ public class LayerItemData
 	}
 	
 	public LayerItemFlags flags;
-	public String name, title, short_desc, long_desc, author, rawXml;
+	public String name, title, short_desc, long_desc, author;
 	public float version;
 	public String date;
 	public BitmapDrawable icon;

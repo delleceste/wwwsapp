@@ -65,6 +65,23 @@ NetworkStatusMonitorListener
 		mLayerListAdapter = new LayerListAdapter(this);
 
 		setContentView(R.layout.activity_layer_list);
+		
+		((LayerListFragment) getFragmentManager().findFragmentById(
+				R.id.layer_list)).setActivateOnItemClick(true);
+
+
+		/* load the layers cached locally */
+		Loader loader = new Loader();
+		ArrayList<LayerItemData> cachedData = loader.getCachedList(this);
+		LayerListFragment layerListFrag = (LayerListFragment) getFragmentManager().findFragmentById(
+				R.id.layer_list);
+
+		for(LayerItemData lid : cachedData)
+			mLayerListAdapter.add(lid);
+
+		Log.e("onCreate", "setting list adapter");
+		layerListFrag.setListAdapter(mLayerListAdapter);
+		
 		// Show the Up button in the action bar.
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -79,18 +96,6 @@ NetworkStatusMonitorListener
 			// 'activated' state when touched.
 			((LayerListFragment) getFragmentManager().findFragmentById(
 					R.id.layer_list)).setActivateOnItemClick(true);
-
-
-			/* load the layers cached locally */
-			Loader loader = new Loader();
-			ArrayList<LayerItemData> cachedData = loader.getCachedList(this);
-			LayerListFragment layerListFrag = (LayerListFragment) getFragmentManager().findFragmentById(
-					R.id.layer_list);
-
-			for(LayerItemData lid : cachedData)
-				mLayerListAdapter.add(lid);
-
-			layerListFrag.setListAdapter(mLayerListAdapter);
 
 		}
 		// TODO: If exposing deep links into your app, handle intents here.
@@ -200,7 +205,9 @@ NetworkStatusMonitorListener
 		PackageInfo pi;
 		try {
 			pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-			Log.e("LayerListActivity.onNetworkBecomesAvailable", "net available: executing task");
+			Log.e("LayerListActivity.onNetworkBecomesAvailable", "net available: executing task version code " + pi.versionCode);
+			if(mLayerFetchTask != null && mLayerFetchTask.getStatus() != AsyncTask.Status.FINISHED)
+				mLayerFetchTask.cancel(true);
 			mLayerFetchTask = new LayerFetchTask(this, pi.versionCode, Locale.getDefault().getLanguage(), this);
 			mLayerFetchTask.execute();
 		}

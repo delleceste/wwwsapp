@@ -14,6 +14,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 import android.util.Log;
@@ -53,6 +54,7 @@ public class XmlParser
 								Log.e("XmlParser.parseLayer NumberFormatException", "invalid float " + layer.getAttribute("version"));
 								ld.version = -1;
 							}
+							list.add(ld);
 						}	
 					}
 				}
@@ -93,33 +95,31 @@ public class XmlParser
 				try 
 				{
 					dom = builder.parse(is);
-					NodeList layerNodes = dom.getElementsByTagName("layer");
-					if(layerNodes.getLength() == 1)
+					Element layer = dom.getDocumentElement(); 
+					Log.e("DOM TO STRING", "rppt"  + layer.getNodeName());
+					layer.normalize();
+			
+					NodeList elements = layer.getElementsByTagName("*");
+					for(int i = 0; i < elements.getLength(); i++)
 					{
-						Node layerNode = layerNodes.item(0);
-						NodeList children = layerNode.getChildNodes();
-						for(int i = 0; i < children.getLength(); i++)
+						Node dnode = elements.item(i);
+						if(dnode.getNodeType() == Node.ELEMENT_NODE)
 						{
-							Element child = (Element) children.item(i);
-							if(child.getTagName().compareTo("name") == 0 && child.getNodeType() == Node.TEXT_NODE)
-								ld.name = child.getNodeValue();
-							else if(child.getTagName().compareTo("title") == 0 && child.getNodeType() == Node.TEXT_NODE)
-								ld.title = child.getNodeValue();
-							else if(child.getTagName().compareTo("author") == 0 && child.getNodeType() == Node.TEXT_NODE)
-								ld.author = child.getNodeValue();
-							else if(child.getTagName().compareTo("date") == 0 && child.getNodeType() == Node.TEXT_NODE)
-								ld.date = child.getNodeValue();
-							else if(child.getTagName().compareTo("title") == 0 && child.getNodeType() == Node.TEXT_NODE)
-								ld.date = child.getNodeValue();
-							else if(child.getTagName().compareTo("description") == 0 && 
-									child.getAttribute("length").compareTo("long") == 0 && 
-									child.getNodeType() == Node.TEXT_NODE)
-								ld.long_desc = child.getNodeValue();
-							else if(child.getTagName().compareTo("description") == 0 && 
-									child.getNodeType() == Node.TEXT_NODE)
-								ld.short_desc = child.getNodeValue();
+							Element el = (Element) elements.item(i);
+							if(el.getTagName().compareTo("name") == 0)
+								ld.name = el.getTextContent();
+							else if(el.getTagName().compareTo("author") == 0)
+								ld.author = el.getTextContent();
+							else if(el.getTagName().compareTo("date") == 0)
+								ld.date = el.getTextContent();
+							else if(el.getTagName().compareTo("description") == 0 && el.getAttribute("length").compareTo("long") == 0 )
+								ld.long_desc = el.getTextContent();
+							else if(el.getTagName().compareTo("description") == 0 )
+								ld.short_desc = el.getTextContent();
 						}
+						
 					}
+					Log.e("detected " ,"stuff " + ld.name + ", " + ld.author);
 				} 
 				catch (SAXException e) 
 				{

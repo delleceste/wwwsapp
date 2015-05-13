@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,7 +32,6 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 	private int mProgress, mTotal, mAppVersionCode;
 	ArrayList<LayerItemData> mLayerData;
 	private Context mContext;
-	private int mVersionCode;
 
 	public LayerFetchTask(LayerFetchTaskListener listener, 
 			int appVersionCode, String lang, Context ctx)
@@ -40,8 +40,9 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 		mTotal = mProgress = 0;
 		mListener = listener;
 		mLayerData = new ArrayList<LayerItemData>();
-		mVersionCode = appVersionCode;
+		mAppVersionCode = appVersionCode;
 		mAppLang = lang;
+		mErrorMsg = "";
 	}
 
 	public synchronized ArrayList<LayerItemData>getData()
@@ -49,6 +50,7 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 		return mLayerData;
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	protected synchronized ArrayList<LayerItemData> doInBackground(Void ...parame) 
 	{
@@ -62,14 +64,13 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 			conn.setDoOutput(true);
 
 			String xml = "";
-			String data = URLEncoder.encode("lang", "UTF-8") + "=" + URLEncoder.encode(mAppLang, "UTF-8");
+			String data = URLEncoder.encode("lang", "UTF-8") + "=" + URLEncoder.encode (mAppLang, "UTF-8");
 			data += "&" + URLEncoder.encode("app_version", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(mAppVersionCode), "UTF-8");
 
 			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 			wr.write(data);
 			wr.flush();
 			wr.close();
-			conn.disconnect();
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String currentLine;
@@ -78,31 +79,33 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 			
 			/* check if layer list did not change */
 			String prevXml = cache.loadFromStorage(LayerListActivity.CACHE_LIST_DIR + "layerlist.xml", mContext);
-			if(prevXml.compareTo(xml) == 0)
-			{
-				Log.e("LayerFetchTask.doInBackground", "* xml layer list didn't change since last check");
-				return null;
-			}
+//			if(prevXml.compareTo(xml) == 0)
+//			{
+//				Log.e("LayerFetchTask.doInBackground", "* xml layer list didn't change since last check");
+//				return null;
+//			}
 			cache.saveToStorage(xml.getBytes(), LayerListActivity.CACHE_LIST_DIR + "layerlist.xml", mContext);
 			in.close();
 
 			if(!isCancelled())
 			{
 				XmlParser parser = new XmlParser();
-				ArrayList<LayerItemData> d = parser.parseLayerList(data);
+				ArrayList<LayerItemData> d = parser.parseLayerList(xml);
 				mTotal = d.size();
+				Log.e("LayerFetchtask", "detected " + mTotal + " layers from " + xml + " query " + data);
+				url = new URL(myUrls.layerDescUrl());
 				for(LayerItemData i : d)
 				{
 					if(isCancelled())
 						break;
 					xml = "";
-					String title = i.name;
+					String layer_name = i.name;
 					/* get layer description */
-					url = new URL(myUrls.layerDescUrl());
 					conn = (HttpURLConnection) url.openConnection();
 					conn.setDoOutput(true);
 					data = URLEncoder.encode("lang", "UTF-8") + "=" + URLEncoder.encode(mAppLang, "UTF-8");
-					data += "&" + URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(title, "UTF-8");
+					data += "&" + URLEncoder.encode("layer", "UTF-8") + "=" + URLEncoder.encode(layer_name, "UTF-8");
+					Log.e("LayerFetchTask.doInBacgkruod", "fetching" + data);
 					wr = new OutputStreamWriter(conn.getOutputStream());
 					wr.write(data);
 					wr.flush();
@@ -111,13 +114,15 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 					while((currentLine = in.readLine()) != null)
 						xml += currentLine + "\n";
 						
-					conn.disconnect();
-					cache.saveToStorage(xml.getBytes(), LayerListActivity.CACHE_LIST_DIR + title + ".xml", mContext);
+					cache.saveToStorage(xml.getBytes(), LayerListActivity.CACHE_LIST_DIR + layer_name + ".xml", mContext);
+					Log.e("LayerFetchTask.doInBacgkruod", "parsing layer XML" + xml);
 					LayerItemData itemData = parser.parseLayer(xml);
 					
 					/* get icon */
+					conn = (HttpURLConnection) url.openConnection();
+					conn.setDoOutput(true);
 					data = URLEncoder.encode("lang", "UTF-8") + "=" + URLEncoder.encode(mAppLang, "UTF-8");
-					data += "&" + URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(title, "UTF-8");
+					data += "&" + URLEncoder.encode("layer", "UTF-8") + "=" + URLEncoder.encode(layer_name, "UTF-8");
 					data += "&" + URLEncoder.encode("icon", "UTF-8") + "=" + URLEncoder.encode("true", "UTF-8");
 					wr = new OutputStreamWriter(conn.getOutputStream());
 					wr.write(data);
@@ -133,21 +138,23 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 	        		}
 	        		byte[] mBitmapBytes = byteBuffer.toByteArray();
 	        		BitmapFactory.Options o2 = new BitmapFactory.Options();
-	        		o2.inDither = true;
 	                o2.inPreferredConfig = Bitmap.Config.ARGB_8888;
 	        		Bitmap bitmap = BitmapFactory.decodeByteArray(mBitmapBytes, 0, mBitmapBytes.length, o2);
 	        		/* a network error may determine decodeByteArray to return a null bitmap (for instance connecting
 	        		 * to a unauthenticated wireless network... it happened at Elettra...)
 	        		 */
 	        		if(bitmap == null) /* prevent from calling onBitmapBytesUpdate */
-	        			Log.e("LayerFetchTask.doInBackground", "Error decoding bitmap for layer " + title);
+	        			Log.e("LayerFetchTask.doInBackground", "Error decoding bitmap for layer " + layer_name);
 	        		else
 	        		{
-	        			cache.saveBitmapToStorage(mBitmapBytes, LayerListActivity.CACHE_LIST_DIR + title + ".bmp", mContext);
-	        			itemData.icon = new BitmapDrawable(mContext.getResources(), bitmap);
+	        			cache.saveBitmapToStorage(mBitmapBytes, LayerListActivity.CACHE_LIST_DIR + layer_name + ".bmp", mContext);
+	        			Log.e("LayerFetchTask.doInBackground", " creating bitmap drawable for " + bitmap + 
+	        					": " + bitmap.getWidth() + "x" + bitmap.getHeight() + " size " + bitmap.getAllocationByteCount());
+	        			//itemData.icon = new BitmapDrawable(mContext.getResources(), bitmap);
 	        		}
 	        			
 					mLayerData.add(itemData);
+					conn.disconnect();
 	        		byteBuffer.flush();
 	        		inputStream.close();
 					publishProgress(mLayerData.size(), mTotal);				
@@ -168,6 +175,7 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 			mErrorMsg = e.getLocalizedMessage();
 			e.printStackTrace();
 		}
+		Log.e("LayerFetchTask", " safely leaving do in bav");
 		return mLayerData;
 
 	}
