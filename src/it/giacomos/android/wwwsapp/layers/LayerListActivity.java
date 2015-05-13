@@ -21,6 +21,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -43,7 +44,8 @@ import android.view.MenuItem;
 public class LayerListActivity extends Activity implements
 LayerListFragment.Callbacks, LayerFetchTaskListener,
 NetworkStatusMonitorListener, 
-LayerActionListener
+LayerActionListener,
+DownloadManagerStatusWatcherListener
 {
 
 	public static final String CACHE_LIST_DIR = "layerlistcache/";
@@ -234,7 +236,7 @@ LayerActionListener
 	{
 		if(action == LayerListAdapter.ACTION_DOWNLOAD)
 		{
-			
+			DownloadManager doma = getSystemService()
 		}
 		else if(action == LayerListAdapter.ACTION_CANCEL_DOWNLOAD)
 		{
@@ -244,6 +246,13 @@ LayerActionListener
 		{
 			
 		}
+		
+	}
+
+	@Override
+	public void onDownloadStatusUpdate(int downloadId, String message, int statusCode,
+			double completed_percent) {
+		// TODO Auto-generated method stub
 		
 	}
 }
