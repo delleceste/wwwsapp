@@ -70,7 +70,15 @@
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:focusable="false"
-             android:text="Button" />
+             android:text="@string/install" />
+         
+          <Button
+             android:id="@+id/buttonUpgrade"
+             style="?android:attr/buttonStyleSmall"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:focusable="false"
+             android:text="@string/update" />
 
      </LinearLayout>
 

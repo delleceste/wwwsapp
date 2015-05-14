@@ -4,6 +4,7 @@ import it.giacomos.android.wwwsapp.network.Data.DataPoolCacheUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -27,7 +28,7 @@ public class Loader
 				LayerItemData d = alist.get(i);
 				String title = d.name;
 				String s = cache.loadFromStorage(LayerListActivity.CACHE_LIST_DIR + title + ".xml", ctx);
-				LayerItemData item = parser.parseLayer(s);
+				LayerItemData item = parser.parseLayerDescription(s);
 				Log.e("Loader.load", "parsed " + item.name + ", " + item.short_desc + " ver " + item.available_version);
 				Bitmap bmp = cache.loadBitmapFromStorage(LayerListActivity.CACHE_LIST_DIR + title + ".bmp", ctx);
 				if(bmp != null)
@@ -37,7 +38,7 @@ public class Loader
 		}
 		return ret;
 	}
-	
+
 	public ArrayList<LayerItemData> getInstalledLayers(Context ctx)
 	{
 		ArrayList<LayerItemData> ret = new ArrayList<LayerItemData>();
@@ -49,6 +50,9 @@ public class Loader
 			layersDir.mkdirs(); /* nothing else to do: no layers installed */
 		else
 		{
+			final String layersDirName = LayerListActivity.LAYERS_DIR;
+			DataPoolCacheUtils cache = new DataPoolCacheUtils();
+			XmlParser parser = new XmlParser();
 			ArrayList <String> layerNames = new ArrayList<String>();
 			File[] files = layersDir.listFiles();
 			for(int i = 0; i < files.length; i++)
@@ -60,23 +64,35 @@ public class Loader
 			for(String fn : layerNames)
 			{
 				Log.e("Loader.getInstalledLayers", "found layer " + fn);
+				final String localizedLayerDescDirName = layersDirName + fn + "/localization/" +
+						Locale.getDefault().getLanguage() + "/";
+				String layerDescFilePath = localizedLayerDescDirName + fn + ".xml";
+				String layerManifestFilePath = layersDirName + fn + "/" + fn + "_manifest.xml";
+				String s = cache.loadFromStorage(layerDescFilePath, ctx);
+				String mani = cache.loadFromStorage(layerManifestFilePath, ctx);
+				LayerItemData item = parser.parseLayerDescription(s);
+				item.installed_version = parser.getVersionFromManifest(mani);
+				item.installed = true;
+				Bitmap bmp = cache.loadBitmapFromStorage(LayerListActivity.CACHE_LIST_DIR + fn + ".bmp", ctx);
+				if(bmp != null)
+					item.icon = new BitmapDrawable(ctx.getResources(), bmp);
+				ret.add(item);
 			}
 		}
 		return ret;
-		
 	}
 
 	public ArrayList<LayerItemData> mergeInstalledAndAvailableLayers(
 			ArrayList<LayerItemData> installedLayers,
 			ArrayList<LayerItemData> availableLayers) 
-	{
+			{
 		ArrayList<LayerItemData> merged = new ArrayList<LayerItemData>();
 		for(LayerItemData installedLayer : availableLayers)
 		{
-			
+
 		}
-		
-		
+
+
 		return merged;
-	}
+			}
 }

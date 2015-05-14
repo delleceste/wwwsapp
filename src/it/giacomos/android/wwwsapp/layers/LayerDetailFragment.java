@@ -47,7 +47,7 @@ public class LayerDetailFragment extends Fragment
 			String layerName = getArguments().getString(ARG_ITEM_DATA);
 			String xmlData = cache.loadFromStorage(LayerListActivity.CACHE_LIST_DIR + layerName + ".xml", 
 					this.getActivity().getApplicationContext());
-			mData = new XmlParser().parseLayer(xmlData);
+			mData = new XmlParser().parseLayerDescription(xmlData);
 			Bitmap bmp = cache.loadBitmapFromStorage(LayerListActivity.CACHE_LIST_DIR + layerName + ".bmp", 
 					this.getActivity().getApplicationContext());
 			if(bmp != null)

@@ -4,26 +4,25 @@ import android.graphics.drawable.BitmapDrawable;
 
 public class LayerItemData 
 {	
-	public void copyFrom(LayerItemData other)
+	public void selectiveCopyFrom(LayerItemData other)
 	{
-		if(!other.name.isEmpty())
+		if(other.name != null && !other.name.isEmpty())
 			name = other.name;
-		if(!other.title.isEmpty())
+		if(other.title != null && !other.title.isEmpty())
 			title = other.title;
-		if(!other.short_desc.isEmpty())
+		if(other.short_desc != null && !other.short_desc.isEmpty())
 			short_desc = other.short_desc;
-		if(!other.author.isEmpty())
+		if(other.author != null && !other.author.isEmpty())
 			author = other.author;
-		if(other.installed_version != 0)
-			installed_version = other.installed_version;
+	//	if(other.installed_version != 0)
+	//		installed_version = other.installed_version;
 		if(other.available_version != 0)
 			available_version = other.available_version;
-		if(!other.date.isEmpty())
+		if(other.date != null && !other.date.isEmpty())
 			date = other.date;
 		
-		flags = other.flags;
 		
-		if(!other.install_date.isEmpty())
+		if(other.install_date != null && !other.install_date.isEmpty())
 			install_date = other.install_date;
 		
 		install_progress = other.install_progress;
@@ -38,9 +37,9 @@ public class LayerItemData
 	public LayerItemData()
 	{
 		name = short_desc = author = date = install_date = "";
-		installed_version = available_version = 0.0f;
+		installed_version = available_version = -1.0f;
 		install_progress = 100;
-		flags = LayerItemFlags.LAYER_NOT_INSTALLED;
+		installed = online = false;
 	}
 	
 	public void setIcon(BitmapDrawable b)
@@ -50,12 +49,7 @@ public class LayerItemData
 		icon = b;
 	}
 	
-	public void setFlags(LayerItemFlags f)
-	{
-		flags = f;
-	}
-	
-	public LayerItemFlags flags;
+	public boolean installed, online;
 	public String name, title, short_desc, long_desc, author;
 	public float installed_version, available_version;
 	public int install_progress;

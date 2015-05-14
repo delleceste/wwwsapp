@@ -59,6 +59,7 @@ ServiceStateChangedBroadcastReceiverListener
 {
 	public static final String SERVICE_STATE_CHANGED_INTENT = "service-state-change-intent";
 	public static final String CACHE_LIST_DIR = "layerlistcache/";
+	public static final String LAYERS_DIR = "layers/";
 	
 	/**
 	 * Whether or not the activity is in two-pane mode, i.e. running on a tablet

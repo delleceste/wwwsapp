@@ -116,7 +116,9 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 						
 					cache.saveToStorage(xml.getBytes(), LayerListActivity.CACHE_LIST_DIR + layer_name + ".xml", mContext);
 					Log.e("LayerFetchTask.doInBacgkruod", "parsing layer XML" + xml);
-					LayerItemData itemData = parser.parseLayer(xml);
+					LayerItemData itemData = parser.parseLayerDescription(xml);
+					if(itemData.available_version < 0)
+						itemData.available_version = i.available_version;
 					
 					/* get icon */
 					conn = (HttpURLConnection) url.openConnection();

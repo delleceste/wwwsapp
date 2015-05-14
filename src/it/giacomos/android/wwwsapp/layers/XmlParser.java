@@ -79,7 +79,7 @@ public class XmlParser
 		return list;
 	}
 
-	public LayerItemData parseLayer(String xml)
+	public LayerItemData parseLayerDescription(String xml)
 	{		
 		Document dom;
 		DocumentBuilderFactory factory;
@@ -125,11 +125,16 @@ public class XmlParser
 				} 
 				catch (SAXException e) 
 				{
-					Log.e("XmlParser.parseLayer SAXException: decode()", e.getLocalizedMessage());
+					Log.e("XmlParser.parseLayerDescription SAXException: ", e.getLocalizedMessage()
+							 + xml);
 				} 
 				catch (IOException e) 
 				{	
-					Log.e("XmlParser.parseLayer: decode()", e.getLocalizedMessage());
+					Log.e("XmlParser.parseLayerDescription: decode()", e.getLocalizedMessage());
+				}
+				catch(NumberFormatException e)
+				{
+					Log.e("XmlParser.parseLayerDescription: decode()", e.getLocalizedMessage());
 				}
 			} 
 			catch (UnsupportedEncodingException e) 
@@ -145,5 +150,51 @@ public class XmlParser
 		return ld;
 	}
 
+	public float getVersionFromManifest(String mani) 
+	{
+		Document dom;
+		DocumentBuilderFactory factory;
+		DocumentBuilder builder;
+		InputStream is;
+		factory = DocumentBuilderFactory.newInstance();
+		try {
+			builder = factory.newDocumentBuilder();
+			try 
+			{
+				is = new ByteArrayInputStream(mani.getBytes("UTF-8"));
+				try 
+				{
+					dom = builder.parse(is);
+					Element layer = dom.getDocumentElement(); 
+					return Float.parseFloat(layer.getAttribute("version"));
+				}
+				catch (SAXException e) 
+				{
+					Log.e("XmlParser.getVersionFromManifest SAXException:", e.getLocalizedMessage()
+							 + mani);
+				} 
+				catch (IOException e) 
+				{	
+					Log.e("XmlParser.getVersionFromManifest: ", e.getLocalizedMessage());
+				}
+				catch(NumberFormatException e)
+				{
+					Log.e("XmlParser.getVersionFromManifest: ", e.getLocalizedMessage());
+				}
+			}
+			catch (UnsupportedEncodingException e) 
+			{
+				Log.e("XmlParser.parseLayer: decode()", e.getLocalizedMessage());
+			}
+		} 
+		catch (ParserConfigurationException e1) 
+		{
+			Log.e("XmlParser.parseLayer: decode()", e1.getLocalizedMessage());
+		}
+		return -1.0f;
+	}
 
 }
+
+
+

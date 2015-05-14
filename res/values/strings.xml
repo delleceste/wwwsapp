@@ -734,6 +734,8 @@ Please note: requests devoid of the full name and date will be ignored.\n\n</str
 
     <string name="install">Install</string>
     <string name="update">Update</string>
+    <string name="uptodate">Up to date</string>
+    <string name="update_to">Update to</string>
     <string name="delete">Remove</string>
     <string name="installing_layer">Installing layer</string>
     <string name="downloading_layer">Downloading layer</string>
