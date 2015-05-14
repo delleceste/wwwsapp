@@ -90,7 +90,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 		{
 			mSettings = new Settings(this);
 			mSleepInterval = mSettings.getServiceSleepIntervalMillis();
-			Log.e("ReportDataService.onStartCommand", "service started sleep interval " + mSleepInterval);
+			Log.e("LayerInstallService.onStartCommand", "service started sleep interval " + mSleepInterval);
 			/* the last time the network was used is saved so that if the service is killed and
 			 * then restarted, we avoid too frequent and unnecessary downloads
 			 */
@@ -116,7 +116,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 		}
 		else
 		{
-			Log.e("ReportDataService.onStartCommand", "* service is already running");
+			Log.e("LayerInstallService.onStartCommand", "* service is already running");
 		}
 		return Service.START_STICKY;
 	}
@@ -164,7 +164,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 	@Override
 	public void onConnected(Bundle arg0) 
 	{
-		// Log.e("ReportDataService.onConnected", "getting last location");
+		// Log.e("LayerInstallService.onConnected", "getting last location");
 		mLocation = LocationServices.FusedLocationApi.getLastLocation(mGApiClient);
 		Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGApiClient);
 		String personName = currentPerson.getDisplayName();
@@ -202,7 +202,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 			/* get the registration id (for new versions, to work with google cloud messaging */
 			GcmRegistrationManager gcmRm = new GcmRegistrationManager();
 			String registrationId = gcmRm.getRegistrationId(this);
-			Log.e("ReportDataService.startTask", "reg id " + registrationId);
+			Log.e("LayerInstallService.startTask", "reg id " + registrationId);
 
 			if(!registrationId.isEmpty())
 			{
@@ -254,7 +254,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 		boolean notified = false;
 		short requestsCount = 0;
 		boolean rainDetectionOnDevice = mSettings.useInternalRainDetection();
-		Log.e("ReportDataService.onServiceDataTaskComplete", "data: " + dataAsString);
+		Log.e("LayerInstallService.onServiceDataTaskComplete", "data: " + dataAsString);
 
 		ServiceSharedData sharedData = ServiceSharedData.Instance(this);
 		NotificationManager mNotificationManager =
@@ -335,7 +335,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 			NotificationData currentNotification = sharedData.getNotificationData(NotificationData.TYPE_REQUEST);
 			if(currentNotification != null) /* a notification is present */
 			{
-				// Log.e("ReportDataService.onServiceDataTaskComplete", " removing notification with id " + currentNotification.makeId());
+				// Log.e("LayerInstallService.onServiceDataTaskComplete", " removing notification with id " + currentNotification.makeId());
 				mNotificationManager.cancel(currentNotification.getTag(), currentNotification.getId());
 
 				/* mark as consumed. The currentNotification is not removed from sharedData because sharedData
@@ -357,7 +357,7 @@ implements  FetchRequestsTaskListener, Runnable, ConnectionCallbacks, OnConnecti
 		 * mSleepInterval, do not try to reconnect too fast, so do not postDelayed of 
 		 * mCheckIfNeedRunIntervalMillis.
 		 */
-		// Log.e("ReportDataService.onConnectionFailed", "connection to location failed sleeping for "  + mSleepInterval);
+		// Log.e("LayerInstallService.onConnectionFailed", "connection to location failed sleeping for "  + mSleepInterval);
 		mHandler.postDelayed(this, mSleepInterval);
 	}
 

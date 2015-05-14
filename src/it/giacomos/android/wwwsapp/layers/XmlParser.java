@@ -47,12 +47,12 @@ public class XmlParser
 							Element layer = (Element) layers.item(i);
 							ld.name = layer.getAttribute("name");
 							try{
-								ld.version = Float.parseFloat(layer.getAttribute("version"));
+								ld.available_version = Float.parseFloat(layer.getAttribute("version"));
 							}
 							catch(NumberFormatException e)
 							{
 								Log.e("XmlParser.parseLayer NumberFormatException", "invalid float " + layer.getAttribute("version"));
-								ld.version = -1;
+								ld.available_version = -1;
 							}
 							list.add(ld);
 						}	
@@ -96,30 +96,32 @@ public class XmlParser
 				{
 					dom = builder.parse(is);
 					Element layer = dom.getDocumentElement(); 
-					Log.e("DOM TO STRING", "rppt"  + layer.getNodeName());
-					layer.normalize();
-			
-					NodeList elements = layer.getElementsByTagName("*");
-					for(int i = 0; i < elements.getLength(); i++)
+					ld.name = layer.getAttribute("name");
+					if(!ld.name.isEmpty())
 					{
-						Node dnode = elements.item(i);
-						if(dnode.getNodeType() == Node.ELEMENT_NODE)
+						layer.normalize();
+
+						NodeList elements = layer.getElementsByTagName("*");
+						for(int i = 0; i < elements.getLength(); i++)
 						{
-							Element el = (Element) elements.item(i);
-							if(el.getTagName().compareTo("name") == 0)
-								ld.name = el.getTextContent();
-							else if(el.getTagName().compareTo("author") == 0)
-								ld.author = el.getTextContent();
-							else if(el.getTagName().compareTo("date") == 0)
-								ld.date = el.getTextContent();
-							else if(el.getTagName().compareTo("description") == 0 && el.getAttribute("length").compareTo("long") == 0 )
-								ld.long_desc = el.getTextContent();
-							else if(el.getTagName().compareTo("description") == 0 )
-								ld.short_desc = el.getTextContent();
+							Node dnode = elements.item(i);
+							if(dnode.getNodeType() == Node.ELEMENT_NODE)
+							{
+								Element el = (Element) elements.item(i);
+								if(el.getTagName().compareTo("title") == 0)
+									ld.title = el.getTextContent();
+								else if(el.getTagName().compareTo("author") == 0)
+									ld.author = el.getTextContent();
+								else if(el.getTagName().compareTo("date") == 0)
+									ld.date = el.getTextContent();
+								else if(el.getTagName().compareTo("description") == 0 && el.getAttribute("length").compareTo("long") == 0 )
+									ld.long_desc = el.getTextContent();
+								else if(el.getTagName().compareTo("description") == 0 )
+									ld.short_desc = el.getTextContent();
+							}
 						}
-						
+						Log.e("detected " ,"stuff " + ld.name + ", " + ld.author);
 					}
-					Log.e("detected " ,"stuff " + ld.name + ", " + ld.author);
 				} 
 				catch (SAXException e) 
 				{

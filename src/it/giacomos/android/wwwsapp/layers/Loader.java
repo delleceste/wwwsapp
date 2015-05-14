@@ -28,7 +28,7 @@ public class Loader
 				String title = d.name;
 				String s = cache.loadFromStorage(LayerListActivity.CACHE_LIST_DIR + title + ".xml", ctx);
 				LayerItemData item = parser.parseLayer(s);
-				Log.e("Loader.load", "parsed " + item.name + ", " + item.short_desc);
+				Log.e("Loader.load", "parsed " + item.name + ", " + item.short_desc + " ver " + item.available_version);
 				Bitmap bmp = cache.loadBitmapFromStorage(LayerListActivity.CACHE_LIST_DIR + title + ".bmp", ctx);
 				if(bmp != null)
 					item.icon = new BitmapDrawable(ctx.getResources(), bmp);
@@ -64,5 +64,19 @@ public class Loader
 		}
 		return ret;
 		
+	}
+
+	public ArrayList<LayerItemData> mergeInstalledAndAvailableLayers(
+			ArrayList<LayerItemData> installedLayers,
+			ArrayList<LayerItemData> availableLayers) 
+	{
+		ArrayList<LayerItemData> merged = new ArrayList<LayerItemData>();
+		for(LayerItemData installedLayer : availableLayers)
+		{
+			
+		}
+		
+		
+		return merged;
 	}
 }

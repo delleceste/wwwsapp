@@ -48,6 +48,10 @@ public class Urls {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String layerDownloadUrl() {
+		return "http://www.giacomos.it/wwwsapp/fetch_layer.php";
+	}
 	
 	
 }

@@ -7,21 +7,8 @@
     <string name="data_source">Data source: http://www.meteo.fvg.it</string>
     <string name="author">&#169; 2015</string>
     <string name="author_web">http://www.giacomos.it</string>
-    <string name="home_title">Home</string>
-    <string name="today_title">Today</string>
-    <string name="tomorrow_title">Tomorrow</string>
-    <string name="two_days_title">Two Days Forecast</string>
-    <string name="three_days_title">3 Days Forecast</string>
-    <string name="four_days_title">4 Days Forecast</string>
-    <string name="radar_title">Radar</string>
-    <string name="forecast_title">Previsioni</string>
-    <string name="observations_title_daily">Daily Observations</string>
-    <string name="observations_title_latest">Latest Observations</string>
-    <string name="title_webcam">Webcam</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
-    <string name="reliability">Reliability</string>
-    <string name="emission_date">Emission date: </string>
     <string name="hours">ore</string>
     <string name="offline">Offline</string>
     <string name="forecast_map_avail_afternoon">Map available\nin the afternoon</string>
@@ -51,27 +38,6 @@
         The displayed information will not be updated.</string>
     <string name="enable_location_for_full_functionality">Enable location services for full functionality.</string>
     <string name="data_missing">Data missing</string>
-    <string name="min_temp">Minimum Temperature</string>
-    <string name="max_temp">Maximum Temperature</string>
-    <string name="min_temp_abbr">Min.T</string>
-    <string name="max_temp_abbr">Max.T</string>
-    <string name="wind_lowercase">wind</string>
-    <string name="wind_3000">Wind 3000mt</string>
-    <string name="wind_2000">Wind 2000mt</string>
-    <string name="mets_per_sec">m/s</string>
-    <string name="km_per_h">km/h</string>
-    <string name="t1000">T.1000m</string>
-    <string name="t2000">T.2000m</string>
-    <string name="celsius">&#8451;</string>
-    <string name="humidity">Humidity</string>
-    <string name="mean_wind">Average Wind</string>
-    <string name="max_wind">Max Wind</string>
-    <string name="temp">Temperature</string>
-    <string name="mean_temp">Average Temperature</string>
-    <string name="sea">Sea</string>
-    <string name="mean_humidity">Average Humidity</string>
-    <string name="pressure">Pressure</string>
-    <string name="not_available">n.a.</string>
     <string name="select_obs_type_daily">Select Daily Observation Type</string>
     <string name="select_obs_type_latest">Select Latest Observation Type</string>
     <string name="pos_accuracy">accuracy</string>
@@ -751,6 +717,15 @@ Please note: requests devoid of the full name and date will be ignored.\n\n</str
         If you like it, you can support the project purchasing the PRO version!\n\n
         Download free app:\nhttps://play.google.com/store/apps/details?id=it.giacomos.android.wwwsapp\n\n
         Download Meteo.FVG pro:\nhttps://play.google.com/store/apps/details?id=it.giacomos.android.wwwsapp.pro\n\n</string>
+    
+    
+    
+    <!--  HELLO WORLD -->
+    
+    
+    
+    
+    
     <string name="title_activity_sign_in">SignInActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="sign_in">Sign in with your Google Account</string>
@@ -760,7 +735,17 @@ Please note: requests devoid of the full name and date will be ignored.\n\n</str
     <string name="install">Install</string>
     <string name="update">Update</string>
     <string name="delete">Remove</string>
+    <string name="installing_layer">Installing layer</string>
+    <string name="downloading_layer">Downloading layer</string>
+    <string name="download_in_progressr">Download in progress&#8230;</string>
+    <string name="download_cancelled">Downloading layer</string>
+    <string name="successfully_installed_layer">Successfully installed layer </string>
+    <string name="download_error">Downloading layer</string>
+    <string name="error_installing_layer">Error installing layer</string>
+    <string name="error_downloading_layer">Error downloading layer</string>
     
+    <string name="available_version">Available version</string>
+    <string name="installed_version">Installed version</string>
     
     
 </resources>

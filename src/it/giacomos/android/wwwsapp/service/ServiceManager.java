@@ -30,23 +30,23 @@ public class ServiceManager
 	{
 		final ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-//		Intent myIntent = new Intent(context, ReportDataService.class);
+//		Intent myIntent = new Intent(context, LayerInstallService.class);
 //		NetworkInfo netinfo = connMgr.getActiveNetworkInfo();
 //		
 //		if(enabled && netinfo != null && netinfo.isConnected())
 //		{
-////			Log.e(" ServiceManager", "enabled "  + enabled + " starting service ReportDataService");
+////			Log.e(" ServiceManager", "enabled "  + enabled + " starting service LayerInstallService");
 //			ComponentName cn = context.startService(myIntent);
-//			return cn.getClassName().endsWith("ReportDataService");
+//			return cn.getClassName().endsWith("LayerInstallService");
 //		}
 //		else
 //		{
 ////			if(netinfo != null)
 ////				Log.e("ServiceManager.setEnabled", "enabled "  + enabled + 
-////						" net up " +  connMgr.getActiveNetworkInfo().isConnectedOrConnecting() + " stopping service ReportDataService");
+////						" net up " +  connMgr.getActiveNetworkInfo().isConnectedOrConnecting() + " stopping service LayerInstallService");
 ////			else
 ////				Log.e("ServiceManager.setEnabled", "enabled "  + enabled + 
-////						" net info null: stopping service ReportDataService");
+////						" net info null: stopping service LayerInstallService");
 //			return context.stopService(myIntent);
 //		}
 		

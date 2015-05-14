@@ -7,6 +7,10 @@ import it.giacomos.android.wwwsapp.MyAlertDialogFragment;
 import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.R.id;
 import it.giacomos.android.wwwsapp.R.layout;
+import it.giacomos.android.wwwsapp.layers.installService.InstallTaskState;
+import it.giacomos.android.wwwsapp.layers.installService.LayerInstallService;
+import it.giacomos.android.wwwsapp.layers.installService.ServiceStateChangedBroadcastReceiver;
+import it.giacomos.android.wwwsapp.layers.installService.ServiceStateChangedBroadcastReceiverListener;
 import it.giacomos.android.wwwsapp.network.NetworkStatusMonitor;
 import it.giacomos.android.wwwsapp.network.NetworkStatusMonitorListener;
 import it.giacomos.android.wwwsapp.network.Data.DataPoolCacheUtils;
@@ -21,10 +25,15 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.DownloadManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 
 /**
  * An activity representing a list of Layers. This activity has different
@@ -42,13 +51,15 @@ import android.view.MenuItem;
  * {@link LayerListFragment.Callbacks} interface to listen for item selections.
  */
 public class LayerListActivity extends Activity implements
-LayerListFragment.Callbacks, LayerFetchTaskListener,
+LayerListFragmentListener, LayerFetchTaskListener,
 NetworkStatusMonitorListener, 
 LayerActionListener,
-DownloadManagerStatusWatcherListener
+DownloadManagerStatusWatcherListener, 
+ServiceStateChangedBroadcastReceiverListener
 {
-
+	public static final String SERVICE_STATE_CHANGED_INTENT = "service-state-change-intent";
 	public static final String CACHE_LIST_DIR = "layerlistcache/";
+	
 	/**
 	 * Whether or not the activity is in two-pane mode, i.e. running on a tablet
 	 * device.
@@ -57,6 +68,7 @@ DownloadManagerStatusWatcherListener
 	private DataPoolCacheUtils mDataCache;
 	private LayerFetchTask mLayerFetchTask;
 	private NetworkStatusMonitor m_networkStatusMonitor;
+	private ServiceStateChangedBroadcastReceiver mServiceBroadcastReceiver;
 	LayerListAdapter mLayerListAdapter;
 
 	@Override
@@ -65,7 +77,8 @@ DownloadManagerStatusWatcherListener
 		super.onCreate(savedInstanceState);
 		mDataCache = new DataPoolCacheUtils();
 		mDataCache.initDir("layerlistcache", this);
-		mLayerListAdapter = new LayerListAdapter(this);
+		mLayerListAdapter = new LayerListAdapter(this, this);
+		mServiceBroadcastReceiver = new ServiceStateChangedBroadcastReceiver(this);
 
 		setContentView(R.layout.activity_layer_list);
 		
@@ -73,14 +86,9 @@ DownloadManagerStatusWatcherListener
 				R.id.layer_list)).setActivateOnItemClick(true);
 
 
-		/* load the layers cached locally */
-		Loader loader = new Loader();
-		ArrayList<LayerItemData> cachedData = loader.getCachedList(this);
+		
 		LayerListFragment layerListFrag = (LayerListFragment) getFragmentManager().findFragmentById(
 				R.id.layer_list);
-
-		for(LayerItemData lid : cachedData)
-			mLayerListAdapter.add(lid);
 
 		Log.e("onCreate", "setting list adapter");
 		layerListFrag.setListAdapter(mLayerListAdapter);
@@ -110,7 +118,20 @@ DownloadManagerStatusWatcherListener
 		super.onResume();
 		/* monitor network status change */
 		m_networkStatusMonitor = new NetworkStatusMonitor(this);
+		/* register receiver for the install service here, not simply when starting an installation
+		 * because this activity may be resumed while a download is in progress.
+		 */
 		registerReceiver(m_networkStatusMonitor, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mServiceBroadcastReceiver, 
+				new IntentFilter(SERVICE_STATE_CHANGED_INTENT));
+		
+		Loader loader = new Loader();
+		ArrayList<LayerItemData> installedLayers = loader.getInstalledLayers(this);
+		ArrayList<LayerItemData> cachedData = loader.getCachedList(this);
+		ArrayList<LayerItemData> mergedData = loader.mergeInstalledAndAvailableLayers(installedLayers, cachedData);
+		for(LayerItemData lid : installedLayers)
+			mLayerListAdapter.add(lid);
+		
 	}
 
 	@Override
@@ -125,6 +146,7 @@ DownloadManagerStatusWatcherListener
 			Log.e("LayerListActivity.onPause", "cancelling Layer Fetch Task");
 			mLayerFetchTask.cancel(true);
 		}
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mServiceBroadcastReceiver);
 	}
 
 	@Override
@@ -170,6 +192,7 @@ DownloadManagerStatusWatcherListener
 			// for the selected item ID.
 			Intent detailIntent = new Intent(this, LayerDetailActivity.class);
 			detailIntent.putExtra(LayerDetailFragment.ARG_ITEM_DATA, d.name);
+			Log.e("onItemSelected", "starting activity pos " + position);
 			startActivity(detailIntent);
 		}
 	}
@@ -236,11 +259,16 @@ DownloadManagerStatusWatcherListener
 	{
 		if(action == LayerListAdapter.ACTION_DOWNLOAD)
 		{
-			DownloadManager doma = getSystemService()
+				Log.e("LayerListActivity.onActionRequested", "starting download service LayerInstallService " + layerName);
+				Intent intent = new Intent(this, LayerInstallService.class);
+				intent.putExtra("downloadLayer", layerName);
+				startService(intent);
 		}
 		else if(action == LayerListAdapter.ACTION_CANCEL_DOWNLOAD)
 		{
-			
+			Intent intent = new Intent(this, LayerInstallService.class);
+			intent.putExtra("downloadLayer", layerName);
+			startService(intent);
 		}
 		else if(action == LayerListAdapter.ACTION_REMOVE)
 		{
@@ -253,6 +281,14 @@ DownloadManagerStatusWatcherListener
 	public void onDownloadStatusUpdate(int downloadId, String message, int statusCode,
 			double completed_percent) {
 		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public void onStateChanged(String layerName, InstallTaskState s, int percent) 
+	{
+		Log.e("LayerListActivity.onStateChanged", " +++++ RECEIVED BROADCAST ++++: " + layerName + ", " + s + "% " + percent);
+		LayerItemData lid = mLayerListAdapter.findItemData(layerName);
+		lid.install_progress = percent;
+		mLayerListAdapter.update(lid);
 	}
 }

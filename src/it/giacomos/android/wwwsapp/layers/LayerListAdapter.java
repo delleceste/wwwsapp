@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -19,20 +20,26 @@ import android.widget.TextView;
 public class LayerListAdapter extends ArrayAdapter<LayerItemData> implements OnClickListener 
 {
 	private final Context context;
-
+	private LayerActionListener mLayerActionListener;
 	public static final int ACTION_DOWNLOAD = 0;
-	public static final int ACTION_CANCEL_DOWNLOAD = 0;
-	public static final int ACTION_REMOVE = 0;
+	public static final int ACTION_CANCEL_DOWNLOAD = 1;
+	public static final int ACTION_REMOVE = 2;
+	
+	private final int LIST_ADAPTER_POS = 0;
 
 	static class ViewHolder {
 		public TextView title, desc;
 		public Button button;
 		public ImageView image;
+		public ProgressBar progressBar;
+		public TextView installedVerTextView, availableVerTextView;
 	}
 
-	public LayerListAdapter(Context context) {
+	public LayerListAdapter(Context context, LayerActionListener lal) 
+	{
 		super(context, R.layout.layer_list_item, new ArrayList<LayerItemData>());
 		this.context = context;
+		mLayerActionListener = lal;
 	}
  
 	LayerItemData findItemData(String name)
@@ -51,7 +58,7 @@ public class LayerListAdapter extends ArrayAdapter<LayerItemData> implements OnC
 		LayerItemData otherD = findItemData(d.name);
 		if(otherD != null)
 		{
-			otherD = d;
+			otherD.copyFrom(d);
 			notifyDataSetChanged();
 		}
 		else
@@ -77,6 +84,9 @@ public class LayerListAdapter extends ArrayAdapter<LayerItemData> implements OnC
 			mViewHolder.desc = (TextView) itemView.findViewById(R.id.description);
 			mViewHolder.image = (ImageView) itemView.findViewById(R.id.icon);
 			mViewHolder.button = (Button) itemView.findViewById(R.id.button);
+			mViewHolder.progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+			mViewHolder.installedVerTextView = (TextView) itemView.findViewById(R.id.tvInstalledVersion);
+			mViewHolder.availableVerTextView = (TextView) itemView.findViewById(R.id.tvAvailableVersion);
 			itemView.setTag(mViewHolder);
 		}
 		else
@@ -88,7 +98,17 @@ public class LayerListAdapter extends ArrayAdapter<LayerItemData> implements OnC
 		LayerItemData d = this.getItem(position);
 		mViewHolder.title.setText(d.title);
 		mViewHolder.desc.setText(d.short_desc);
-		Log.e("LayerListAdapter.getVIew", "setBacground drawaw " + d.icon.getBitmap().getByteCount());
+		if(d.install_progress < 100)
+			mViewHolder.progressBar.setVisibility(View.VISIBLE);
+		else
+			mViewHolder.progressBar.setVisibility(View.GONE);
+		
+		mViewHolder.progressBar.setProgress(d.install_progress);
+		String availVersion = context.getString(R.string.available_version) + " ";
+		String instVersion = context.getString(R.string.installed_version) + " ";
+		mViewHolder.installedVerTextView.setText(instVersion + String.valueOf(d.installed_version));
+		mViewHolder.availableVerTextView.setText(availVersion + String.valueOf(d.available_version));
+		
 		mViewHolder.image.setBackgroundDrawable(d.icon);
 		if(d.flags == LayerItemFlags.LAYER_INSTALLED)
 			mViewHolder.button.setText(R.string.delete);
@@ -98,13 +118,25 @@ public class LayerListAdapter extends ArrayAdapter<LayerItemData> implements OnC
 			mViewHolder.button.setText(R.string.update);
 			
 		mViewHolder.button.setOnClickListener(this);
+		mViewHolder.button.setTag(position);
 			
 		return itemView;
 	}
 
 	@Override
-	public void onClick(View arg0) {
-		// TODO Auto-generated method stub
+	public void onClick(View v) 
+	{
+		if(v.getId() == R.id.button)
+		{
+			Log.e("onClick", " clicked on id " + v.getId());
+			Button b = (Button) v;
+			if(b.getText().toString().compareTo(context.getString(R.string.install)) == 0) 
+			{
+				LayerItemData d = this.getItem(Integer.parseInt(b.getTag().toString()));
+				if(d.isValid())
+					mLayerActionListener.onActionRequested(d.name, ACTION_DOWNLOAD);
+			}
+		}
 		
 	}
 }

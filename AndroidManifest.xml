@@ -149,7 +149,13 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".service.ReportDataServicevice" >
+        <service android:name=".service.ReportDataService" >
+        </service>
+        
+          <service android:name=".service.ReportDataService" >
+        </service>
+        
+            <service android:name=".layers.installService.LayerInstallService" >
         </service>
 
         <meta-data
@@ -240,15 +246,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.giacomos.android.wwwsapp.HelloWorldActivity" />
         </activity>
+        
+        
         <activity
             android:name="it.giacomos.android.wwwsapp.layers.LayerDetailActivity"
-            android:label="@string/title_layer_detail"
-      it.giacomos.android.wwwsapp.layers.LayerListActivityntActivityName=".LayerListActivity" 
-            android:theme="@android:style/Theme.Holo.Light" >
+            android:label="@string/title_layer_list"
+            android:parentActivityName=".LayerListActivity"
+            android:theme="@android:style/Theme.Holo.Light"  >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.giacomos.android.wwwsapp.LayerListActivity" />
         </activity>
+        
     </application>
 
 </manifest>
