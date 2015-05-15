@@ -82,11 +82,6 @@ ServiceStateChangedBroadcastReceiverListener
 
 		setContentView(R.layout.activity_layer_list);
 		
-		((LayerListFragment) getFragmentManager().findFragmentById(
-				R.id.layer_list)).setActivateOnItemClick(true);
-
-
-		
 		LayerListFragment layerListFrag = (LayerListFragment) getFragmentManager().findFragmentById(
 				R.id.layer_list);
 
@@ -105,8 +100,7 @@ ServiceStateChangedBroadcastReceiverListener
 
 			// In two-pane mode, list items should be given the
 			// 'activated' state when touched.
-			((LayerListFragment) getFragmentManager().findFragmentById(
-					R.id.layer_list)).setActivateOnItemClick(true);
+			layerListFrag.setActivateOnItemClick(true);
 
 		}
 		// TODO: If exposing deep links into your app, handle intents here.
