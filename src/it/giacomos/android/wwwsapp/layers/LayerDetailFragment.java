@@ -13,7 +13,6 @@ import it.giacomos.android.wwwsapp.R;
 import it.giacomos.android.wwwsapp.R.id;
 import it.giacomos.android.wwwsapp.R.layout;
 import it.giacomos.android.wwwsapp.dummy.DummyContent;
-import it.giacomos.android.wwwsapp.network.Data.DataPoolCacheUtils;
 
 /**
  * A fragment representing a single Layer detail screen. This fragment is either
@@ -43,7 +42,7 @@ public class LayerDetailFragment extends Fragment
 
 		if (getArguments().containsKey(ARG_ITEM_DATA)) 
 		{
-			DataPoolCacheUtils cache = new DataPoolCacheUtils();
+			FileUtils cache = new FileUtils();
 			String layerName = getArguments().getString(ARG_ITEM_DATA);
 			String xmlData = cache.loadFromStorage(LayerListActivity.CACHE_LIST_DIR + layerName + ".xml", 
 					this.getActivity().getApplicationContext());

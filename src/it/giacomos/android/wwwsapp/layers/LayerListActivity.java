@@ -13,7 +13,6 @@ import it.giacomos.android.wwwsapp.layers.installService.ServiceStateChangedBroa
 import it.giacomos.android.wwwsapp.layers.installService.ServiceStateChangedBroadcastReceiverListener;
 import it.giacomos.android.wwwsapp.network.NetworkStatusMonitor;
 import it.giacomos.android.wwwsapp.network.NetworkStatusMonitorListener;
-import it.giacomos.android.wwwsapp.network.Data.DataPoolCacheUtils;
 import it.giacomos.android.wwwsapp.network.state.Urls;
 import android.content.Context;
 import android.content.Intent;
@@ -66,7 +65,7 @@ ServiceStateChangedBroadcastReceiverListener
 	 * device.
 	 */
 	private boolean mTwoPane;
-	private DataPoolCacheUtils mDataCache;
+	private FileUtils mDataCache;
 	private LayerFetchTask mLayerFetchTask;
 	private NetworkStatusMonitor m_networkStatusMonitor;
 	private ServiceStateChangedBroadcastReceiver mServiceBroadcastReceiver;
@@ -76,10 +75,10 @@ ServiceStateChangedBroadcastReceiverListener
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		mDataCache = new DataPoolCacheUtils();
+		mDataCache = new FileUtils();
 		mDataCache.initDir("layerlistcache", this);
 		mLayerListAdapter = new LayerListAdapter(this, this);
-		mServiceBroadcastReceiver = new ServiceStateChangedBroadcastReceiver(this);
+		mServiceBroadcastReceiver = new ServiceStateChangedBroadcastReceiver();
 
 		setContentView(R.layout.activity_layer_list);
 		
@@ -125,14 +124,8 @@ ServiceStateChangedBroadcastReceiverListener
 		registerReceiver(m_networkStatusMonitor, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mServiceBroadcastReceiver, 
 				new IntentFilter(SERVICE_STATE_CHANGED_INTENT));
-		
-		Loader loader = new Loader();
-		ArrayList<LayerItemData> installedLayers = loader.getInstalledLayers(this);
-		ArrayList<LayerItemData> cachedData = loader.getCachedList(this);
-		ArrayList<LayerItemData> mergedData = loader.mergeInstalledAndAvailableLayers(installedLayers, cachedData);
-		for(LayerItemData lid : installedLayers)
-			mLayerListAdapter.add(lid);
-		
+		mServiceBroadcastReceiver.registerListener(this);
+		reload();	
 	}
 
 	@Override
@@ -148,6 +141,7 @@ ServiceStateChangedBroadcastReceiverListener
 			mLayerFetchTask.cancel(true);
 		}
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mServiceBroadcastReceiver);
+		mServiceBroadcastReceiver.unregisterListener();
 	}
 
 	@Override
@@ -268,14 +262,30 @@ ServiceStateChangedBroadcastReceiverListener
 		else if(action == LayerListAdapter.ACTION_CANCEL_DOWNLOAD)
 		{
 			Intent intent = new Intent(this, LayerInstallService.class);
-			intent.putExtra("downloadLayer", layerName);
+			intent.putExtra("cancelDownloadLayer", layerName);
 			startService(intent);
 		}
 		else if(action == LayerListAdapter.ACTION_REMOVE)
 		{
-			
+			boolean success = new FileUtils().uninstallLayer(layerName, this);
+			if(success)
+			{
+				Log.e("LayerListActivity", "REMOVED LAYER " + layerName);
+				reload();
+			}
 		}
 		
+	}
+
+	private void reload() 
+	{
+		mLayerListAdapter.clear();
+		Loader loader = new Loader();
+		ArrayList<LayerItemData> layersList = loader.getInstalledLayers(this);
+		ArrayList<LayerItemData> cachedData = loader.getCachedList(this);
+		layersList.addAll(cachedData);
+		for(LayerItemData lid : layersList)
+			mLayerListAdapter.update(lid);	
 	}
 
 	@Override
@@ -289,7 +299,10 @@ ServiceStateChangedBroadcastReceiverListener
 	{
 		Log.e("LayerListActivity.onStateChanged", " +++++ RECEIVED BROADCAST ++++: " + layerName + ", " + s + "% " + percent);
 		LayerItemData lid = mLayerListAdapter.findItemData(layerName);
+		lid.installState = s;
 		lid.install_progress = percent;
 		mLayerListAdapter.update(lid);
+		if(percent == 100)
+			reload();
 	}
 }

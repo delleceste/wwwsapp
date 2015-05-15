@@ -1,6 +1,5 @@
 package it.giacomos.android.wwwsapp.layers;
 
-import it.giacomos.android.wwwsapp.network.Data.DataPoolCacheUtils;
 import it.giacomos.android.wwwsapp.network.state.Urls;
 
 import java.io.BufferedReader;
@@ -57,7 +56,7 @@ public class LayerFetchTask extends AsyncTask<Void, Integer, ArrayList<LayerItem
 		try{
 			int nRead;
 			byte[] bytes;
-			DataPoolCacheUtils cache = new DataPoolCacheUtils();
+			FileUtils cache = new FileUtils();
 			Urls myUrls = new Urls();
 			URL url = new URL(myUrls.layersListUrl());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();

@@ -16,9 +16,9 @@ import android.provider.Settings.Secure;
 import android.util.Log;
 import android.widget.Toast;
 import it.giacomos.android.wwwsapp.R;
+import it.giacomos.android.wwwsapp.layers.FileUtils;
 import it.giacomos.android.wwwsapp.network.NetworkStatusMonitor;
 import it.giacomos.android.wwwsapp.network.NetworkStatusMonitorListener;
-import it.giacomos.android.wwwsapp.network.Data.DataPoolCacheUtils;
 import it.giacomos.android.wwwsapp.network.state.Urls;
 import it.giacomos.android.wwwsapp.network.state.ViewType;
 
@@ -48,7 +48,7 @@ ReportUpdateTaskListener, ConnectionCallbacks, OnConnectionFailedListener
 		mReportUpdaterListener = rul;
 		mLastReportUpdatedAt = 0;
 		mReportUpdateTask = null;
-		DataPoolCacheUtils dpcu = new DataPoolCacheUtils();
+		FileUtils dpcu = new FileUtils();
 	}
 
 
@@ -197,7 +197,7 @@ ReportUpdateTaskListener, ConnectionCallbacks, OnConnectionFailedListener
 			mReportUpdaterListener.onReportUpdateDone(data);
 			//			Log.e("ReportUpdater.onPostExecute", "saving to cache: " + data);
 			/* save data into cache */
-			DataPoolCacheUtils dataPoolCUtils = new DataPoolCacheUtils();
+			FileUtils dataPoolCUtils = new FileUtils();
 			/// dataPoolCUtils.saveToStorage(data.getBytes(), ViewType.REPORT, mContext);
 			mLastReportUpdatedAt = System.currentTimeMillis();
 		}

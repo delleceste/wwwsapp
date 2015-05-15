@@ -1,6 +1,5 @@
 package it.giacomos.android.wwwsapp.layers;
 
-import it.giacomos.android.wwwsapp.network.Data.DataPoolCacheUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ public class Loader
 	public ArrayList<LayerItemData> getCachedList(Context ctx)
 	{
 		ArrayList<LayerItemData> ret = new ArrayList<LayerItemData>();
-		DataPoolCacheUtils cache = new DataPoolCacheUtils();
+		FileUtils cache = new FileUtils();
 		String list = cache.loadFromStorage(LayerListActivity.CACHE_LIST_DIR + "layerlist.xml", ctx);
 		if(!list.isEmpty())
 		{
@@ -29,7 +28,11 @@ public class Loader
 				String title = d.name;
 				String s = cache.loadFromStorage(LayerListActivity.CACHE_LIST_DIR + title + ".xml", ctx);
 				LayerItemData item = parser.parseLayerDescription(s);
-				Log.e("Loader.load", "parsed " + item.name + ", " + item.short_desc + " ver " + item.available_version);
+				/* there is no version in the descriptive xml file. But we have the version in the d variable,
+				 * which has been taken from layerlist.xml. The version information in layerlist.xml was directly
+				 * obtained by the database.
+				 */
+				item.available_version = d.available_version;
 				Bitmap bmp = cache.loadBitmapFromStorage(LayerListActivity.CACHE_LIST_DIR + title + ".bmp", ctx);
 				if(bmp != null)
 					item.icon = new BitmapDrawable(ctx.getResources(), bmp);
@@ -45,25 +48,24 @@ public class Loader
 		File filesDir = ctx.getFilesDir();
 		String layersDirNam = filesDir.getAbsolutePath() + "/layers/";
 		File layersDir = new File(layersDirNam);
-		DataPoolCacheUtils cutils  = new DataPoolCacheUtils();
+		FileUtils cutils  = new FileUtils();
 		if(!layersDir.exists())
 			layersDir.mkdirs(); /* nothing else to do: no layers installed */
 		else
 		{
 			final String layersDirName = LayerListActivity.LAYERS_DIR;
-			DataPoolCacheUtils cache = new DataPoolCacheUtils();
+			FileUtils cache = new FileUtils();
 			XmlParser parser = new XmlParser();
 			ArrayList <String> layerNames = new ArrayList<String>();
 			File[] files = layersDir.listFiles();
 			for(int i = 0; i < files.length; i++)
 			{
-				File f = files[i];
-				if(f.isDirectory())
+				File f = files[i].getAbsoluteFile();
+				if(cutils.containsLayerInstallation(f) )
 					layerNames.add(f.getName());
 			}
 			for(String fn : layerNames)
 			{
-				Log.e("Loader.getInstalledLayers", "found layer " + fn);
 				final String localizedLayerDescDirName = layersDirName + fn + "/localization/" +
 						Locale.getDefault().getLanguage() + "/";
 				String layerDescFilePath = localizedLayerDescDirName + fn + ".xml";

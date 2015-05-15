@@ -1,5 +1,6 @@
 package it.giacomos.android.wwwsapp.layers;
 
+import it.giacomos.android.wwwsapp.layers.installService.InstallTaskState;
 import android.graphics.drawable.BitmapDrawable;
 
 public class LayerItemData 
@@ -27,6 +28,8 @@ public class LayerItemData
 		
 		install_progress = other.install_progress;
 		
+		installState = other.installState;
+		
 	}
 	
 	public boolean isValid()
@@ -40,6 +43,7 @@ public class LayerItemData
 		installed_version = available_version = -1.0f;
 		install_progress = 100;
 		installed = online = false;
+		installState = InstallTaskState.NONE;
 	}
 	
 	public void setIcon(BitmapDrawable b)
@@ -55,4 +59,5 @@ public class LayerItemData
 	public int install_progress;
 	public String date, install_date;
 	public BitmapDrawable icon;
+	public InstallTaskState installState;
 }

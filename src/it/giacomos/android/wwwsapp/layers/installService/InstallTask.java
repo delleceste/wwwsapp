@@ -53,6 +53,7 @@ public class InstallTask extends AsyncTask<Void, Integer, String>
 		Urls myUrls = new Urls();
 		URL url;
 		try {
+			publishProgress(0);
 			url = new URL(myUrls.layerDownloadUrl());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
@@ -92,6 +93,9 @@ public class InstallTask extends AsyncTask<Void, Integer, String>
 					byte[] buffer = new byte[BUFFER_SIZE];
 					while ((bytesRead = inputStream.read(buffer)) != -1) 
 					{
+						if(isCancelled())
+							return "";
+						
 						totBytesRead += bytesRead;
 						outputStream.write(buffer, 0, bytesRead);
 						percentage = Math.round(totBytesRead * 100.0f / (float) contentLength);
@@ -99,6 +103,11 @@ public class InstallTask extends AsyncTask<Void, Integer, String>
 						{
 							publishProgress(percentage);
 							previousPublishedPercentage = percentage;
+						}
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
 					}
 
@@ -158,7 +167,13 @@ public class InstallTask extends AsyncTask<Void, Integer, String>
 	        ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFilePath), BUFFER_SIZE));
 	        try {
 	            ZipEntry ze = null;
-	            while ((ze = zin.getNextEntry()) != null) {
+	            while ((ze = zin.getNextEntry()) != null) 
+	            {
+	            	if(isCancelled())
+	            	{
+	            		zin.close();
+	            		return false;
+	            	}
 	                String path = location + ze.getName();
 	                File unzipFile = new File(path);
 
@@ -179,7 +194,8 @@ public class InstallTask extends AsyncTask<Void, Integer, String>
 	                    FileOutputStream out = new FileOutputStream(unzipFile, false);
 	                    BufferedOutputStream fout = new BufferedOutputStream(out, BUFFER_SIZE);
 	                    try {
-	                        while ( (size = zin.read(buffer, 0, BUFFER_SIZE)) != -1 ) {
+	                        while ( (size = zin.read(buffer, 0, BUFFER_SIZE)) != -1 ) 
+	                        {
 	                            fout.write(buffer, 0, size);
 	                        }
 

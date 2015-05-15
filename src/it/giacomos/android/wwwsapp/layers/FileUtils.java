@@ -1,4 +1,4 @@
-package it.giacomos.android.wwwsapp.network.Data;
+package it.giacomos.android.wwwsapp.layers;
 
 
 import java.io.BufferedWriter;
@@ -15,9 +15,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-public class DataPoolCacheUtils 
+public class FileUtils 
 {
-	public DataPoolCacheUtils()
+	public FileUtils()
 	{
 		
 	}
@@ -47,21 +47,21 @@ public class DataPoolCacheUtils
 		catch (IOException ex) {
 
 		}		
-		Log.e("DataPoolCacheUtils.loadFromStorage", "loading string for " + filename + " took " + (System.currentTimeMillis() - startT));
+		Log.e("FileUtils.loadFromStorage", "loading string for " + filename + " took " + (System.currentTimeMillis() - startT));
 		return txt;
 	}
 
 	public Bitmap loadBitmapFromStorage(String filename, Context ctx) 
 	{
 		long startT = System.currentTimeMillis();
-//		Log.e("DataPoolCacheUtils.loadFromStorage", "loading bitmap for " + bitmapType);
+//		Log.e("FileUtils.loadFromStorage", "loading bitmap for " + bitmapType);
 		Bitmap bmp = null;
 		/* Decode a file path into a bitmap. If the specified file name is null, 
 		 * or cannot be decoded into a bitmap, the function returns null. 
 		 */
 		filename = getFilePath(filename, ctx);
 		bmp = BitmapFactory.decodeFile(filename);
-		Log.e("DataPoolCacheUtils.loadFromStorage", "loading bitmap for  " + filename + " took " + (System.currentTimeMillis() - startT));
+		Log.e("FileUtils.loadFromStorage", "loading bitmap for  " + filename + " took " + (System.currentTimeMillis() - startT));
 		return bmp;
 	}
 
@@ -84,7 +84,7 @@ public class DataPoolCacheUtils
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-		Log.e("DataPoolCacheUtils.saveToStorage", "saving bitmap for " + filename + " took " + (System.currentTimeMillis() - startT));
+		Log.e("FileUtils.saveToStorage", "saving bitmap for " + filename + " took " + (System.currentTimeMillis() - startT));
 	}
 
 	public void saveToStorage(byte[] bytes, String filename, Context ctx)
@@ -103,14 +103,14 @@ public class DataPoolCacheUtils
 				out.close();
 			}
 			catch (FileNotFoundException e) {
-				Log.e("DataPoolCacheUtils.saveToStorage", e.getLocalizedMessage());
+				Log.e("FileUtils.saveToStorage", e.getLocalizedMessage());
 				/* nada que hacer */
 			}
 			catch (IOException e) 
 			{
-				Log.e("DataPoolCacheUtils.saveToStorage", e.getLocalizedMessage());
+				Log.e("FileUtils.saveToStorage", e.getLocalizedMessage());
 			}
-			Log.e("DataPoolCacheUtils.saveToStorage", "saving string for " + filename + " took " + (System.currentTimeMillis() - startT));
+			Log.e("FileUtils.saveToStorage", "saving string for " + filename + " took " + (System.currentTimeMillis() - startT));
 		}
 	}
 
@@ -130,6 +130,52 @@ public class DataPoolCacheUtils
 	{
 		File filesDir = ctx.getFilesDir();
 		return filesDir.getAbsolutePath() + "/" + filename;
+	}
+
+	public String getLayerDirPath(String layerName, Context ctx)
+	{
+		File filesDir = ctx.getFilesDir();
+		return filesDir.getAbsolutePath() + "/layers/" + layerName + "/";
+	}
+	
+	private boolean mDeleteRecursive(File fileOrDirectory) {
+	    if (fileOrDirectory.isDirectory())
+	        for (File child : fileOrDirectory.listFiles())
+	            mDeleteRecursive(child);
+
+	    fileOrDirectory.delete();
+	    /* always returns true */
+	    return true;
+	}
+	
+	public boolean uninstallLayer(String layerName, Context ctx) 
+	{
+		File layerDir = new File(getLayerDirPath(layerName, ctx));
+		if(layerDir.exists())
+			return mDeleteRecursive(layerDir); /* true */
+		return false;
+	}
+
+	public boolean containsLayerInstallation(File f) 
+	{
+		if(f.isDirectory())
+		{
+			String layerName = f.getName();
+			String layerAbsolutepath = f.getAbsolutePath();
+			String xmlUiName = layerName + "_ui.xml";
+			String manifestName = layerName + "_manifest.xml";
+			File xmlF = new File(layerAbsolutepath + "/" + xmlUiName);
+			File maniF = new File(layerAbsolutepath + "/" + manifestName);
+			if( xmlF.exists() && maniF.exists())
+				
+			{
+				Log.e("containsLayerInstallation", xmlUiName + " and " + manifestName + " exist");
+				return true;
+			}
+			else
+				Log.e("containsLayerInstallation", layerAbsolutepath + "/" + xmlUiName + " and " + layerAbsolutepath + "/" + manifestName + " DONT exist");
+		}
+		return false;
 	}
 	
 }
