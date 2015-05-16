@@ -50,15 +50,16 @@ import android.widget.ListView;
  * {@link LayerListFragment.Callbacks} interface to listen for item selections.
  */
 public class LayerListActivity extends Activity implements
-LayerListFragmentListener, LayerFetchTaskListener,
+LayerListFragmentListener,
+LayerListServiceStateChangedBroadcastReceiverListener,
 NetworkStatusMonitorListener, 
 LayerActionListener,
-DownloadManagerStatusWatcherListener, 
 ServiceStateChangedBroadcastReceiverListener
 {
 	public static final String SERVICE_STATE_CHANGED_INTENT = "service-state-change-intent";
 	public static final String CACHE_LIST_DIR = "layerlistcache/";
 	public static final String LAYERS_DIR = "layers/";
+	public static final String LIST_DOWNLOAD_SERVICE_STATE_CHANGED_INTENT = "list-download-service-state-change-intent";
 	
 	/**
 	 * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -66,9 +67,9 @@ ServiceStateChangedBroadcastReceiverListener
 	 */
 	private boolean mTwoPane;
 	private FileUtils mDataCache;
-	private LayerFetchTask mLayerFetchTask;
 	private NetworkStatusMonitor m_networkStatusMonitor;
 	private ServiceStateChangedBroadcastReceiver mServiceBroadcastReceiver;
+	private LayerListServiceStateChangedBroadcastReceiver mLayerListServiceStateChangedBroadcastReceiver; 
 	LayerListAdapter mLayerListAdapter;
 
 	@Override
@@ -79,7 +80,9 @@ ServiceStateChangedBroadcastReceiverListener
 		mDataCache.initDir("layerlistcache", this);
 		mLayerListAdapter = new LayerListAdapter(this, this);
 		mServiceBroadcastReceiver = new ServiceStateChangedBroadcastReceiver();
-
+		mLayerListServiceStateChangedBroadcastReceiver = 
+				new LayerListServiceStateChangedBroadcastReceiver();
+		
 		setContentView(R.layout.activity_layer_list);
 		
 		LayerListFragment layerListFrag = (LayerListFragment) getFragmentManager().findFragmentById(
@@ -119,6 +122,11 @@ ServiceStateChangedBroadcastReceiverListener
 		LocalBroadcastManager.getInstance(this).registerReceiver(mServiceBroadcastReceiver, 
 				new IntentFilter(SERVICE_STATE_CHANGED_INTENT));
 		mServiceBroadcastReceiver.registerListener(this);
+		
+		LocalBroadcastManager.getInstance(this).registerReceiver(mLayerListServiceStateChangedBroadcastReceiver, 
+				new IntentFilter(LIST_DOWNLOAD_SERVICE_STATE_CHANGED_INTENT));
+		mLayerListServiceStateChangedBroadcastReceiver.registerListener(this);
+
 		reload();	
 	}
 
@@ -128,12 +136,10 @@ ServiceStateChangedBroadcastReceiverListener
 		super.onPause();
 
 		unregisterReceiver(m_networkStatusMonitor);
-		/* cancel async task if running */
-		if(mLayerFetchTask != null && mLayerFetchTask.getStatus() != AsyncTask.Status.FINISHED)
-		{
-			Log.e("LayerListActivity.onPause", "cancelling Layer Fetch Task");
-			mLayerFetchTask.cancel(true);
-		}
+		
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mLayerListServiceStateChangedBroadcastReceiver);
+		mLayerListServiceStateChangedBroadcastReceiver.unregisterListener();
+		
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mServiceBroadcastReceiver);
 		mServiceBroadcastReceiver.unregisterListener();
 	}
@@ -186,32 +192,32 @@ ServiceStateChangedBroadcastReceiverListener
 		}
 	}
 
-	@Override
-	public void onLayersUpdated(ArrayList<LayerItemData> data,
-			String errorMessage) 
+	public void onLayerListDownloadError(String errorMessage)
+	{
+		MyAlertDialogFragment.MakeGenericError(errorMessage, this);
+	}
+	
+	public void onLayersSuccessfullyUpdated() 
 	{
 		/* everything should be done */
-		if(!errorMessage.isEmpty())
-		{
-			MyAlertDialogFragment.MakeGenericError(errorMessage, this);
-		}
+		Log.e("LayerListActivity.onLayersSuccesfullyUpdated", "TODO: save timestamp");
 	}
 
-	@Override
-	public void onLayerFetchProgress(int progress, int total) 
+	public void onLayerDownloaded(String layerName, float version, int percent) 
 	{
-		ArrayList<LayerItemData> partialData = mLayerFetchTask.getData();
-		if(partialData.size() >= progress && progress > 0)
-		{
-			LayerItemData d = mLayerFetchTask.getData().get(progress - 1);
-			mLayerListAdapter.update(d);
-		}
+		LayerItemData d = null;
+		FileUtils fu = new FileUtils();
+		XmlParser parser = new XmlParser();
+		String xml = fu.loadFromStorage(
+				LayerListActivity.CACHE_LIST_DIR + layerName + ".xml", getApplicationContext());
+		d = parser.parseLayerDescription(xml);
+		d.available_version = version;
+		mLayerListAdapter.update(d);
 	}
 
-	@Override
-	public void onLayerFetchCancelled(int size, int mTotal) 
+	public void onLayerFetchCancelled(int percent) 
 	{
-
+		Log.e("LayerListActivity.onLayerFetchCancelled" , "Layer fetch was cancelled");
 	}
 
 	@Override
@@ -220,11 +226,10 @@ ServiceStateChangedBroadcastReceiverListener
 		PackageInfo pi;
 		try {
 			pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-			Log.e("LayerListActivity.onNetworkBecomesAvailable", "net available: executing task version code " + pi.versionCode);
-			if(mLayerFetchTask != null && mLayerFetchTask.getStatus() != AsyncTask.Status.FINISHED)
-				mLayerFetchTask.cancel(true);
-			mLayerFetchTask = new LayerFetchTask(this, pi.versionCode, Locale.getDefault().getLanguage(), this);
-			mLayerFetchTask.execute();
+			Log.e("LayerListActivity.onNetworkBecomesAvailable", "net available: starting LayerListDownloadService if it's time " + pi.versionCode);
+			Intent intent = new Intent(this, LayerListDownloadService.class);
+			intent.putExtra("download", "true");
+			startService(intent);
 		}
 		catch (NameNotFoundException e) 
 		{
@@ -235,12 +240,10 @@ ServiceStateChangedBroadcastReceiverListener
 	@Override
 	public void onNetworkBecomesUnavailable() 
 	{
-		if(mLayerFetchTask != null && mLayerFetchTask.getStatus() == AsyncTask.Status.FINISHED)
-		{
-			Log.e("LayerListActivity.onNetworkBecomesUnavailable", "net available: cancel task");
-			mLayerFetchTask.cancel(true);
-		}
-
+		Log.e("LayerListActivity.onNetworkBecomesUnavailable", "net UNavailable: cancelling LayerListDownloadService ");
+		Intent intent = new Intent(this, LayerListDownloadService.class);
+		intent.putExtra("cancel", "true");
+		startService(intent);
 	}
 
 	@Override
@@ -281,13 +284,7 @@ ServiceStateChangedBroadcastReceiverListener
 		for(LayerItemData lid : layersList)
 			mLayerListAdapter.update(lid);	
 	}
-
-	@Override
-	public void onDownloadStatusUpdate(int downloadId, String message, int statusCode,
-			double completed_percent) {
-		// TODO Auto-generated method stub
-	}
-
+	
 	@Override
 	public void onStateChanged(String layerName, InstallTaskState s, int percent) 
 	{
@@ -298,5 +295,23 @@ ServiceStateChangedBroadcastReceiverListener
 		mLayerListAdapter.update(lid);
 		if(percent == 100)
 			reload();
+	}
+
+	@Override
+	public void onStateChanged(String layerName, float version,
+			LayerListDownloadServiceState s, int percent, String errorMessage) 
+	{
+		if(s == LayerListDownloadServiceState.CANCELLED)
+			this.onLayerFetchCancelled(percent);
+		else if(s == LayerListDownloadServiceState.DOWNLOADING)
+			this.onLayerDownloaded(layerName, version, percent);
+		else if(s == LayerListDownloadServiceState.COMPLETE)
+			this.onLayersSuccessfullyUpdated();
+		else if(s == LayerListDownloadServiceState.ERROR)
+			this.onLayerListDownloadError(errorMessage);
+		else
+			Log.e("LayerListActivity.onStateChanged", "!!! should not be here: "
+					+ layerName + ", state " + s + " percent "+ percent + " error "
+					+ errorMessage);
 	}
 }

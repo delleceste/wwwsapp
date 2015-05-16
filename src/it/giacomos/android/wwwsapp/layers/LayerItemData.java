@@ -2,6 +2,7 @@ package it.giacomos.android.wwwsapp.layers;
 
 import it.giacomos.android.wwwsapp.layers.installService.InstallTaskState;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 
 public class LayerItemData 
 {	
@@ -37,6 +38,26 @@ public class LayerItemData
 		return name.length() > 0;
 	}
 	
+	public void restoreProgressInformation(String [] progressInformation)
+	{
+		if(progressInformation.length == 5)
+		{
+			name = progressInformation[0];
+			installState = InstallTaskState.valueOf(progressInformation[4]);
+			
+			try{
+				install_progress = Integer.parseInt(progressInformation[1]);
+				installed = Boolean.parseBoolean(progressInformation[2]);
+				online = Boolean.parseBoolean(progressInformation[3]);
+			}
+			catch (NumberFormatException e)
+			{
+				Log.e("LayerItemData: constructor from progress", 
+						"NumberFormatException: " + e.getLocalizedMessage());
+			}
+		}
+	}
+	
 	public LayerItemData()
 	{
 		name = short_desc = author = date = install_date = "";
@@ -51,6 +72,17 @@ public class LayerItemData
 		if(icon != null)
 			icon.getBitmap().recycle();
 		icon = b;
+	}
+	
+	public String[] progressInformationToStringArray()
+	{
+		String [] data = new String[5];
+		data[0] = name;
+		data[1] = String.valueOf(install_progress);
+		data[2] = String.valueOf(installed);
+		data[3] = String.valueOf(online);
+		data[4] = installState.name();
+		return data;
 	}
 	
 	public boolean installed, online;
