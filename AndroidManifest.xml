@@ -245,6 +245,12 @@
             android:label="@string/title_layer_list"
             android:parentActivityName=".HelloWorldActivity"
             android:theme="@android:style/Theme.Holo.Light"  >
+            
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MAIN" />
+            </intent-filter>
+            
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.giacomos.android.wwwsapp.HelloWorldActivity" />

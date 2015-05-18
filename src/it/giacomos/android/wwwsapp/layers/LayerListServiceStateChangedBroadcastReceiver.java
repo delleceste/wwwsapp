@@ -27,7 +27,7 @@ public class LayerListServiceStateChangedBroadcastReceiver extends BroadcastRece
 	@Override
 	public void onReceive(Context context, Intent intent) 
 	{
-		if(mServiceStateChangedBroadcastReceiverListener != null && intent.hasExtra("serviceStateChanged"))
+		if(mServiceStateChangedBroadcastReceiverListener != null && intent.hasExtra("listDownloadServiceState"))
 		{
 			String layerName = intent.getStringExtra("layerName");
 			LayerListDownloadServiceState state = (LayerListDownloadServiceState) intent.getSerializableExtra("listDownloadServiceState");
@@ -37,7 +37,5 @@ public class LayerListServiceStateChangedBroadcastReceiver extends BroadcastRece
 			mServiceStateChangedBroadcastReceiverListener.onStateChanged(layerName,
 						version, state, percent, error);
 		}
-
 	}
-
 }

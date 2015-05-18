@@ -70,6 +70,7 @@ ServiceStateChangedBroadcastReceiverListener
 	private NetworkStatusMonitor m_networkStatusMonitor;
 	private ServiceStateChangedBroadcastReceiver mServiceBroadcastReceiver;
 	private LayerListServiceStateChangedBroadcastReceiver mLayerListServiceStateChangedBroadcastReceiver; 
+	private ArrayList<String> mProgressRestoredFromInstanceState;
 	LayerListAdapter mLayerListAdapter;
 
 	@Override
@@ -106,6 +107,8 @@ ServiceStateChangedBroadcastReceiverListener
 			layerListFrag.setActivateOnItemClick(true);
 
 		}
+		if(savedInstanceState != null && savedInstanceState.containsKey("progressState"))
+			mProgressRestoredFromInstanceState = savedInstanceState.getStringArrayList("progressState");
 		// TODO: If exposing deep links into your app, handle intents here.
 	}
 
@@ -127,7 +130,10 @@ ServiceStateChangedBroadcastReceiverListener
 				new IntentFilter(LIST_DOWNLOAD_SERVICE_STATE_CHANGED_INTENT));
 		mLayerListServiceStateChangedBroadcastReceiver.registerListener(this);
 
-		reload();	
+		reload();
+		
+		if(mProgressRestoredFromInstanceState != null)
+			mLayerListAdapter.restoreProgressFromString(mProgressRestoredFromInstanceState);
 	}
 
 	@Override
@@ -142,6 +148,12 @@ ServiceStateChangedBroadcastReceiverListener
 		
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mServiceBroadcastReceiver);
 		mServiceBroadcastReceiver.unregisterListener();
+	}
+	
+	protected void onSaveInstanceState (Bundle outState)
+	{
+		Log.e("LayerListActivity.onSaveInstanceState", "saving state " + mLayerListAdapter.dumpProgressToString());
+		outState.putStringArrayList("progressState", mLayerListAdapter.dumpProgressToString());
 	}
 
 	@Override
@@ -228,7 +240,9 @@ ServiceStateChangedBroadcastReceiverListener
 			pi = getPackageManager().getPackageInfo(getPackageName(), 0);
 			Log.e("LayerListActivity.onNetworkBecomesAvailable", "net available: starting LayerListDownloadService if it's time " + pi.versionCode);
 			Intent intent = new Intent(this, LayerListDownloadService.class);
+			intent.putExtra("version", pi.versionCode);
 			intent.putExtra("download", "true");
+			intent.putExtra("lang", Locale.getDefault().getLanguage());
 			startService(intent);
 		}
 		catch (NameNotFoundException e) 
@@ -289,10 +303,9 @@ ServiceStateChangedBroadcastReceiverListener
 	public void onStateChanged(String layerName, InstallTaskState s, int percent) 
 	{
 		Log.e("LayerListActivity.onStateChanged", " +++++ RECEIVED BROADCAST ++++: " + layerName + ", " + s + "% " + percent);
-		LayerItemData lid = mLayerListAdapter.findItemData(layerName);
-		lid.installState = s;
-		lid.install_progress = percent;
-		mLayerListAdapter.update(lid);
+		if(!layerName.isEmpty())
+			mLayerListAdapter.updateProgress(layerName, percent, s);
+		
 		if(percent == 100)
 			reload();
 	}
@@ -301,6 +314,7 @@ ServiceStateChangedBroadcastReceiverListener
 	public void onStateChanged(String layerName, float version,
 			LayerListDownloadServiceState s, int percent, String errorMessage) 
 	{
+		Log.e("LayerListActivity.onStateChanged", " +++++ RECEIVED BROADCAST ++++: " + layerName + ", " + s + "% " + percent + " -- errpr " + errorMessage);
 		if(s == LayerListDownloadServiceState.CANCELLED)
 			this.onLayerFetchCancelled(percent);
 		else if(s == LayerListDownloadServiceState.DOWNLOADING)

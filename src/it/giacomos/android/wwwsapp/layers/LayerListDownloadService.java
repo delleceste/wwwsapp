@@ -22,6 +22,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -30,13 +31,13 @@ import android.util.Log;
  * @author giacomo
  *
  */
-public class LayerListDownloadService extends Service {
+public class LayerListDownloadService extends Service implements LayerFetchTaskListener {
 
 	private String mErrorMsg;
-	private boolean mIsCancelled;
 	private String mAppLang;
-	private float mAppVersionCode;
+	private int mAppVersionCode;
 	private LayerListDownloadServiceState mState;
+	private LayerFetchTask mLayerFetchTask;
 
 	/**
 	 * @param name
@@ -44,7 +45,6 @@ public class LayerListDownloadService extends Service {
 	public LayerListDownloadService() {
 		super();
 		mErrorMsg = "";
-		mIsCancelled = false;
 	}
 
 	/** If wi fi network is enabled, I noticed that turning on 3G network as well 
@@ -55,160 +55,34 @@ public class LayerListDownloadService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{
-		mAppVersionCode = intent.getFloatExtra("version", -1.0f);
+		mAppVersionCode = intent.getIntExtra("version", -1);
 		mAppLang = intent.getStringExtra("lang");
 		if(intent.hasExtra("download"))
 			mDownloadLayersList();
 		else if(intent.hasExtra("cancel"))
-			mIsCancelled = true;
-		
-		if(mIsCancelled)
-			mState = LayerListDownloadServiceState.CANCELLED;			
+			mCancelDownload();
 		
 		return Service.START_STICKY;
 	}
 
+	private void mCancelDownload()
+	{
+		if(mLayerFetchTask != null && mLayerFetchTask.getStatus() != AsyncTask.Status.FINISHED)
+			mLayerFetchTask.cancel(true);
+		/* state cancelled will be set by onLayerFetchCancelled */
+	}
+	
 	private void mDownloadLayersList()
 	{
 		mState = LayerListDownloadServiceState.DOWNLOADING;
-		try{
-			int nRead;
-			int progress = 0;
-			int total = 0;
-			int percent = 0;
-			byte[] bytes;
-			FileUtils cache = new FileUtils();
-			Urls myUrls = new Urls();
-			URL url = new URL(myUrls.layersListUrl());
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setDoOutput(true);
-
-			String xml = "";
-			
-			String data = URLEncoder.encode("lang", "UTF-8") + "=" + URLEncoder.encode (mAppLang, "UTF-8");
-			data += "&" + URLEncoder.encode("app_version", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(mAppVersionCode), "UTF-8");
-
-			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-			wr.write(data);
-			wr.flush();
-			wr.close();
-			
-			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String currentLine;
-			while((currentLine = in.readLine()) != null)
-				xml += currentLine + "\n";
-			
-			/* check if layer list did not change */
-			String prevXml = cache.loadFromStorage(LayerListActivity.CACHE_LIST_DIR + "layerlist.xml", this);
-//			if(prevXml.compareTo(xml) == 0)
-//			{
-//				Log.e("LayerFetchTask.doInBackground", "* xml layer list didn't change since last check");
-//				return null;
-//			}
-			cache.saveToStorage(xml.getBytes(), LayerListActivity.CACHE_LIST_DIR + "layerlist.xml", this);
-			in.close();
-
-			if(!mIsCancelled)
-			{
-				XmlParser parser = new XmlParser();
-				ArrayList<LayerItemData> d = parser.parseLayerList(xml);
-				total = d.size();
-				Log.e("LayerFetchtask", "detected " + total + " layers from " + xml + " query " + data);
-				url = new URL(myUrls.layerDescUrl());
-				for(LayerItemData i : d)
-				{
-					if(mIsCancelled)
-						break;
-					xml = "";
-					String layer_name = i.name;
-					/* get layer description */
-					conn = (HttpURLConnection) url.openConnection();
-					conn.setDoOutput(true);
-					data = URLEncoder.encode("lang", "UTF-8") + "=" + URLEncoder.encode(mAppLang, "UTF-8");
-					data += "&" + URLEncoder.encode("layer", "UTF-8") + "=" + URLEncoder.encode(layer_name, "UTF-8");
-					Log.e("LayerFetchTask.doInBacgkruod", "fetching" + data);
-					wr = new OutputStreamWriter(conn.getOutputStream());
-					wr.write(data);
-					wr.flush();
-					wr.close();
-					in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-					while((currentLine = in.readLine()) != null)
-						xml += currentLine + "\n";
-						
-					cache.saveToStorage(xml.getBytes(), LayerListActivity.CACHE_LIST_DIR + layer_name + ".xml", this);
-					Log.e("LayerFetchTask.doInBacgkruod", "parsing layer XML" + xml);
-					LayerItemData itemData = parser.parseLayerDescription(xml);
-					if(itemData.available_version < 0)
-						itemData.available_version = i.available_version;
-					
-					/* get icon */
-					conn = (HttpURLConnection) url.openConnection();
-					conn.setDoOutput(true);
-					data = URLEncoder.encode("lang", "UTF-8") + "=" + URLEncoder.encode(mAppLang, "UTF-8");
-					data += "&" + URLEncoder.encode("layer", "UTF-8") + "=" + URLEncoder.encode(layer_name, "UTF-8");
-					data += "&" + URLEncoder.encode("icon", "UTF-8") + "=" + URLEncoder.encode("true", "UTF-8");
-					wr = new OutputStreamWriter(conn.getOutputStream());
-					wr.write(data);
-					wr.flush();
-					wr.close();
-					
-					InputStream inputStream = conn.getInputStream();
-	        		/* get bytes from input stream */
-	        		ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-	        		bytes = new byte[1024];
-	        		while ((nRead = inputStream.read(bytes, 0, bytes.length)) != -1) {
-	        			byteBuffer.write(bytes, 0, nRead);
-	        		}
-	        		byte[] mBitmapBytes = byteBuffer.toByteArray();
-	        		BitmapFactory.Options o2 = new BitmapFactory.Options();
-	                o2.inPreferredConfig = Bitmap.Config.ARGB_8888;
-	        		Bitmap bitmap = BitmapFactory.decodeByteArray(mBitmapBytes, 0, mBitmapBytes.length, o2);
-	        		/* a network error may determine decodeByteArray to return a null bitmap (for instance connecting
-	        		 * to a unauthenticated wireless network... it happened at Elettra...)
-	        		 */
-	        		if(bitmap == null) /* prevent from calling onBitmapBytesUpdate */
-	        			Log.e("LayerFetchTask.doInBackground", "Error decoding bitmap for layer " + layer_name);
-	        		else
-	        		{
-	        			cache.saveBitmapToStorage(mBitmapBytes, LayerListActivity.CACHE_LIST_DIR + layer_name + ".bmp", this);
-	        			Log.e("LayerFetchTask.doInBackground", " creating bitmap drawable for " + bitmap + 
-	        					": " + bitmap.getWidth() + "x" + bitmap.getHeight());
-	        		}
-	        		progress++;
-	        		
-					conn.disconnect();
-	        		byteBuffer.flush();
-	        		inputStream.close();
-	        		percent = (int) Math.round((float) progress / (float) total * 100.0);
-	        		mNotifyStateChanged(i.name, i.available_version, percent);
-				}
-				/* everything successful */
-				mState = LayerListDownloadServiceState.COMPLETE;
-			}
-			if(mIsCancelled)
-			{
-				
-			}
-		}
-		catch (UnsupportedEncodingException e) 
-		{
-			mState = LayerListDownloadServiceState.ERROR;
-			mErrorMsg = e.getLocalizedMessage();
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-			mState = LayerListDownloadServiceState.ERROR;
-			mErrorMsg = e.getLocalizedMessage();
-			e.printStackTrace();
-		}
-		Log.e("LayerListDownloadService", " Done!error : " + mErrorMsg);
-		mNotifyStateChanged("", 100, -1);
+		if(mLayerFetchTask != null && mLayerFetchTask.getStatus() != AsyncTask.Status.FINISHED)
+			mLayerFetchTask.cancel(true);
+		mLayerFetchTask = new LayerFetchTask(this, mAppVersionCode, mAppLang, this);
+		mLayerFetchTask.execute();
 	}
 	
 	private void mNotifyStateChanged(String layer, float version, int percent)
 	{
-//		Log.e("GreenDisplayService.mNotifyTutorialActivityStateChanged", " notifying state changed to " + mState.getType());
 		Intent stateChangedNotif = new Intent(LayerListActivity.LIST_DOWNLOAD_SERVICE_STATE_CHANGED_INTENT);
 		stateChangedNotif.putExtra("listDownloadServiceState", mState);
 		stateChangedNotif.putExtra("percent", percent);
@@ -218,14 +92,42 @@ public class LayerListDownloadService extends Service {
 			stateChangedNotif.putExtra("layerName", layer);
 			stateChangedNotif.putExtra("version", version);
 		}
-
 		LocalBroadcastManager.getInstance(this).sendBroadcast(stateChangedNotif);		
 	}
 
 	@Override
-	public IBinder onBind(Intent intent) {
+	public IBinder onBind(Intent intent) 
+	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void onLayersUpdated(boolean success, String errorMessage) 
+	{
+		if(!success)
+		{
+			mErrorMsg = errorMessage;
+			mState = LayerListDownloadServiceState.ERROR;
+		}
+		mState = LayerListDownloadServiceState.COMPLETE;
+		mNotifyStateChanged("", -1, 100);	
+	}
+
+	@Override
+	public void onLayerFetchProgress(LayerFetchTaskProgressData d) 
+	{
+		mState = LayerListDownloadServiceState.DOWNLOADING;
+		Log.e("LayerListDownloadService.onLayerFetchProgress", " percent " + d.percent);
+		mNotifyStateChanged(d.name, d.available_version, d.percent);
+	}
+
+	@Override
+	public void onLayerFetchCancelled() 
+	{
+		mState = LayerListDownloadServiceState.CANCELLED;
+		mNotifyStateChanged("", -1, 100);
+		
 	}
 	
 }
